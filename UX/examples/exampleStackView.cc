@@ -91,7 +91,7 @@ int main()
                                         .size([=]{
                                             return screen.size() - Size{0, appBar.height()};
                                         })
-                                        .pos(0, appBar.height())
+                                        .pos({0, appBar.height()})
                                     )
                                     .add(
                                         AppBar{}
@@ -104,7 +104,7 @@ int main()
                         );
                     }
                 })
-                .pos(0, appBar.height())
+                .pos({0, appBar.height()})
                 .size([=]{ return stack.size() - Size{0, appBar.height()}; })
             )
         )

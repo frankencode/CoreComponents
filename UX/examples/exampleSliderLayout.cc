@@ -12,7 +12,7 @@ int main()
     return
         View{}
         .associate(&view)
-        .size(sp(480), sp(48))
+        .size({sp(480), sp(48)})
         .layout(
             ManagedRowLayout{}
             .align(RowAlign::Center)

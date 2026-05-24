@@ -11,7 +11,7 @@ int main()
         Window{
             View{}
             .associate(&view)
-            .size(320, 200)
+            .size({320, 200})
             .add(
                 View{}
                 .size([=]{ return view.size() / 4; })

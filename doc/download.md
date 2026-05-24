@@ -1,5 +1,5 @@
-Downloads
-=========
+Download
+========
 
 Sourcecode | Hashsums
 :----------|:----------

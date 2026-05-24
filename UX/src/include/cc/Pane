@@ -40,6 +40,9 @@ public:
 protected:
     friend class Object;
 
+    /** \brief Internal state
+      * \hideinheritancegraph
+      */
     struct State: public View::State
     {
         State() = default;

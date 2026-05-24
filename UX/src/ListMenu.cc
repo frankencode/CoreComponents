@@ -145,7 +145,7 @@ ListMenu::ListMenu():
 ListMenu::ListMenu(double width, double height):
     Flickable{new State}
 {
-    size(width, height);
+    size({width, height});
 }
 
 ListMenu &ListMenu::associate(Out<ListMenu> self)

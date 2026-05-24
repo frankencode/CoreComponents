@@ -54,6 +54,9 @@ public:
     ScrollView &scrollBarAutoHide(bool newValue) { me().scrollBarAutoHide(newValue); return *this; }
 
 protected:
+    /** \brief Internal state
+      * \hideinheritancegraph
+      */
     struct State: public View::State
     {
         State(const View &carrier = Pane{});

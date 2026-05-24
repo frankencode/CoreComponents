@@ -162,11 +162,11 @@ public:
         return me().at(index);
     }
 
-    /** \copydoc at(long index) const
+    /** Get constant reference to the item at \a index
       */
     const Item &operator[](long index) const { return at(index); }
 
-    /** \copydoc mutableAt(long)
+    /** Get reference to the item at \a index
       */
     Item &operator[](long index) { return mutableAt(index); }
 

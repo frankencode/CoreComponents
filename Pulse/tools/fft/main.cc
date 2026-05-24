@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
             .lineCap(LineCap::Round)
             .lineJoin(LineJoin::Round)
         )
-        .size(gu(80), gu(60))
+        .size({gu(80), gu(60)})
     }.show();
 
     Thread fftWorker {

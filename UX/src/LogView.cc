@@ -82,7 +82,7 @@ LogView::LogView():
 LogView::LogView(double width, double height):
     ListView{new State}
 {
-    size(width, height);
+    size({width, height});
 }
 
 LogView &LogView::associate(Out<LogView> self)

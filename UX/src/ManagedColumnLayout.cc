@@ -113,16 +113,16 @@ void ManagedColumnLayout::State::updateChildWidths()
         if (child.size()[0] < availWidth) {
             // horizonally expand child view
             View target = child;
-            if (availWidth <= child.preferredSize()[0]) target.size(availWidth, child.size()[1]);
-            else target.size(child.preferredSize()[0], child.size()[1]);
+            if (availWidth <= child.preferredSize()[0]) target.size({availWidth, child.size()[1]});
+            else target.size({child.preferredSize()[0], child.size()[1]});
         }
         else if (availWidth < child.size()[0]) {
             // horizontally shrink child view
             View target = child;
-            if (child.minSize()[0] < availWidth) target.size(availWidth, child.size()[1]);
-            else target.size(child.minSize()[0], child.size()[1]);
+            if (child.minSize()[0] < availWidth) target.size({availWidth, child.size()[1]});
+            else target.size({child.minSize()[0], child.size()[1]});
             // take care of eventually change minimum height (e.g. when a text wraps)
-            if (child.size()[1] < child.minSize()[1]) target.size(child.size()[0], child.minSize()[1]);
+            if (child.size()[1] < child.minSize()[1]) target.size({child.size()[0], child.minSize()[1]});
         }
     }
 }
@@ -152,11 +152,11 @@ void ManagedColumnLayout::State::updateChildHeights(Size neededSize)
                         View target = child;
                         double newHeight = child.size()[1] + delta;
                         if (newHeight > child.maxSize()[1]) {
-                            target.size(child.size()[0], child.maxSize()[1]);
+                            target.size({child.size()[0], child.maxSize()[1]});
                             tryAgain = true;
                             break;
                         }
-                        target.size(child.size()[0], newHeight);
+                        target.size({child.size()[0], newHeight});
                     }
                 }
             }
@@ -186,11 +186,11 @@ void ManagedColumnLayout::State::updateChildHeights(Size neededSize)
                         View target = child;
                         double newHeight = child.size()[1] - delta;
                         if (newHeight < child.minSize()[1]) {
-                            target.size(child.size()[0], child.minSize()[1]);
+                            target.size({child.size()[0], child.minSize()[1]});
                             tryAgain = true;
                             break;
                         }
-                        target.size(child.size()[0], newHeight);
+                        target.size({child.size()[0], newHeight});
                     }
                 }
             }

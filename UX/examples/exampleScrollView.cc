@@ -9,7 +9,7 @@ int main()
         ScrollView{
             sp(500), sp(500),
             Pane{}
-            .size(sp(900), sp(900))
+            .size({sp(900), sp(900)})
             .add(
                 View{sp(400), sp(400)}
                 .centerInParent()
@@ -17,7 +17,7 @@ int main()
             )
             .add(
                 Label{"Test 1, 2, 3"}
-                .pos(sp(100), sp(100))
+                .pos(sp(100))
             )
         }.run();
 }

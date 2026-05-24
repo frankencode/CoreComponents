@@ -55,7 +55,7 @@ public:
     Picture &color(Definition<Color> &&f) { me().color(move(f)); return *this; } ///< %Define the foreground color
 
 private:
-    struct State: public View::State
+    struct State final: public View::State
     {
         State(const Visual &initVisual = Visual{}, Color initColor = Color{});
         explicit State(const Image &image, Color initColor = Color{});

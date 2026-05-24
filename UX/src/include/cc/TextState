@@ -12,6 +12,9 @@
 
 namespace cc {
 
+/** \brief Internal state
+  * \hideinheritancegraph
+  */
 struct Text::State: public View::State
 {
     explicit State(const String &initialText = String{}, Font initialFont = Font{}, bool html = false):

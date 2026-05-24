@@ -112,16 +112,16 @@ void ManagedRowLayout::State::updateChildHeights()
         if (child.size()[1] < availHeight) {
             // vertically expand child view
             View target = child;
-            if (availHeight <= child.preferredSize()[1]) target.size(child.size()[0], availHeight);
-            else target.size(child.size()[0], child.preferredSize()[1]);
+            if (availHeight <= child.preferredSize()[1]) target.size({child.size()[0], availHeight});
+            else target.size({child.size()[0], child.preferredSize()[1]});
         }
         else if (availHeight < child.size()[0]) {
             // vertically shrink child view
             View target = child;
-            if (child.minSize()[1] < availHeight) target.size(child.size()[0], availHeight);
-            else target.size(child.size()[0], child.minSize()[1]);
+            if (child.minSize()[1] < availHeight) target.size({child.size()[0], availHeight});
+            else target.size({child.size()[0], child.minSize()[1]});
             // take care of eventually changed minimum width (e.g. when a text unwraps)
-            if (child.size()[0] < child.minSize()[0]) target.size(child.minSize()[0], child.size()[1]);
+            if (child.size()[0] < child.minSize()[0]) target.size({child.minSize()[0], child.size()[1]});
         }
     }
 }
@@ -151,11 +151,11 @@ void ManagedRowLayout::State::updateChildWidths(Size neededSize)
                         View target = child;
                         double newWidth = child.size()[0] + delta;
                         if (newWidth > child.maxSize()[0]) {
-                            target.size(child.maxSize()[0], child.size()[1]);
+                            target.size({child.maxSize()[0], child.size()[1]});
                             tryAgain = true;
                             break;
                         }
-                        target.size(newWidth, child.size()[1]);
+                        target.size({newWidth, child.size()[1]});
                     }
                 }
             }
@@ -185,11 +185,11 @@ void ManagedRowLayout::State::updateChildWidths(Size neededSize)
                         View target = child;
                         double newWidth = child.size()[0] - delta;
                         if (newWidth < child.minSize()[0]) {
-                            target.size(child.minSize()[0], child.size()[1]);
+                            target.size({child.minSize()[0], child.size()[1]});
                             tryAgain = true;
                             break;
                         }
-                        target.size(newWidth, child.size()[1]);
+                        target.size({newWidth, child.size()[1]});
                     }
                 }
             }

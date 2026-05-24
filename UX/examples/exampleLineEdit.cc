@@ -39,7 +39,7 @@ int main()
             .onAccepted([=]{
                 CC_INSPECT(edit.text());
             })
-            .pos(dp(16), dp(16))
+            .pos({dp(16)})
         )
         .run();
 }

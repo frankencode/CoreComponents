@@ -9,7 +9,6 @@
 #include <cc/TextView>
 #include <cc/Text>
 #include <cc/LineSource>
-#include <cc/Format>
 
 namespace cc {
 
@@ -58,7 +57,7 @@ TextView::TextView():
 TextView::TextView(double width, double height):
     ListView{new State}
 {
-    size(width, height);
+    size({width, height});
 }
 
 TextView::TextView(const String &text):

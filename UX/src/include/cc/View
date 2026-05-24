@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2022 Frank Mertens.
+ * Copyright (C) 2020-2026 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the GNU General Public License version 3
  * (see CoreComponents/LICENSE-gpl-3.0).
@@ -37,9 +37,6 @@ class Flickable;
   */
 class View: public Surface
 {
-protected:
-    struct State;
-
 public:
     /** %View identifier
       */
@@ -58,10 +55,11 @@ public:
     View(double width, double height):
         View{new State}
     {
-        size(Size{width, height});
+        me().size({width, height});
     }
 
     /** Get a weak reference in \a self
+      * \todo rename to "tie"
       */
     View &associate(Out<View> self)
     {
@@ -99,71 +97,29 @@ public:
       */
     ///@{
 
-    /** Define foreground
+    CC_PROPERTY(View, Color, paper)
+    CC_PROPERTY(View, bool, visible)
+    CC_PROPERTY_AND_EASING(View, double, opacity)
+    CC_PROPERTY(View, bool, clip)
+    CC_PROPERTY(View, bool, moving)
+    CC_PROPERTY_AND_EASING(View, Point, pos)
+    CC_PROPERTY_AND_EASING(View, Size, size)
+    CC_PROPERTY(View, Padding, padding)
+    CC_PROPERTY_AND_EASING(View, Point, pivot)
+    CC_PROPERTY_AND_EASING(View, double, angle)
+    CC_PROPERTY_AND_EASING(View, double, scale)
+    CC_PROPERTY(View, View, decoration)
+
+    /** Define the foreground
       */
     View &paint(Definition<void> &&f) { me().paint(move(f)); return *this; }
 
-    Color paper() const { return me().paper(); } ///< Get background color
-    View &paper(Color newValue) { me().paper(newValue); return *this; } ///< %Set background color
-    View &paper(Definition<Color> &&f) { me().paper(move(f)); return *this; } ///< Define background color
-
-    bool visible() const { return me().visible(); } ///< Get visible
-    View &visible(bool newValue) { me().visible(newValue); return *this; } ///< %Set visible
-    View &visible(Definition<bool> &&f) { me().visible(move(f)); return *this; } ///< Define visible
-
-    double opacity() const { return me().opacity(); } ///< Get opacity
-    View &opacity(double newValue) { me().opacity(newValue); return *this; } ///< %Set opacity
-    View &opacity(Definition<double> &&f) { me().opacity(move(f)); return *this; } ///< Define opacity
-    View &opacityEasing(const EasingCurve &easing, double duration) { Easing{me().opacity, easing, duration}; return *this; } ///< %Set easing on opacity
-
-    bool clip() const { return me().clip(); } ///< Get clip
-    View &clip(bool newValue) { me().clip(newValue); return *this; } ///< %Set clip
-    View &clip(Definition<bool> &&f) { me().clip(move(f)); return *this; } ///< Define clip
-
-    bool moving() const { return me().moving(); } ///< Get moving
-    View &moving(bool newValue) { me().moving(newValue); return *this; } ///< %Set moving
-    View &moving(Definition<bool> &&f) { me().moving(move(f)); return *this; } ///< Define moving
-
-    Point pos() const { return me().pos(); } ///< Get position
-    View &pos(Point newValue) { me().pos(newValue); return *this; } ///< %Set position
-    View &pos(double x, double y) { me().pos(Point{x, y}); return *this; } ///< %Set position
-    View &pos(Definition<Point> &&f) { me().pos(move(f)); return *this; } ///< Define position
-    View &posEasing(const EasingCurve &easing, double duration, Function<bool()> &&direct = nullptr) { Easing{me().pos, easing, duration, move(direct)}; return *this; } ///< %Set easing on position
-
-    Size size() const { return me().size(); } ///< Get size
     double x() const { return me().pos()[0]; } ///< Get pos()[0]
     double y() const { return me().pos()[1]; } ///< Get pos()[1]
     double width() const { return me().width(); } ///< Get size()[0]
     double height() const { return me().height(); } ///< Get size()[1]
     double innerWidth() const { return me().innerWidth(); } ///< Get inner width
     double innerHeight() const { return me().innerHeight(); } ///< Get inner height
-    View &size(Size newValue) { me().size(newValue); return *this; } ///< %Set size to \a newValue
-    View &size(double width, double height) { me().size = Size{width, height}; return *this; } ///< %Set size to Size{\a width, \a height}
-    View &size(Definition<Size> &&f) { me().size(move(f)); return *this; } ///< Define size
-    View &sizeEasing(const EasingCurve &easing, double duration) { Easing{me().size, easing, duration}; return *this; } ///< %Set easing on size
-
-    Padding padding() const { return me().padding(); } ///< \copydoc View::State::padding
-    View &padding(const Padding &newValue) { me().padding(newValue); return *this; } ///< %Set padding
-    View &padding(Definition<Padding> &&f) { me().padding(move(f)); return *this; } ///< Define padding
-
-    Point pivot() const { return me().pivot(); } ///< Get rotation center
-    View &pivot(Point newValue) { me().pivot(newValue); return *this; } ///< %Set rotation center
-    View &pivot(Definition<Point> &&f) { me().pivot(move(f)); return *this; } ///< Define rotation center
-    View &pivotEasing(const EasingCurve &easing, double duration) { Easing{me().pivot, easing, duration}; return *this; } ///< %Set easing on rotation center
-
-    double angle() const { return me().angle(); } ///< Get rotation angle
-    View &angle(double newValue) { me().angle(newValue); return *this; } ///< %Set rotation angle
-    View &angle(Definition<double> &&f) { me().angle(move(f)); return *this; } ///< Define rotation angle
-    View &angleEasing(const EasingCurve &easing, double duration) { Easing{me().angle, easing, duration}; return *this; } ///< %Set easing on rotation angle
-
-    double scale() const { return me().scale(); } ///< Get scale factor
-    View &scale(double newValue) { me().scale(newValue); return *this; } ///< %Set scale factor
-    View &scale(Definition<double> &&f) { me().scale(move(f)); return *this; } ///< Define scale factor
-    View &scaleEasing(const EasingCurve &easing, double duration) { Easing{me().scale, easing, duration}; return *this; } ///< %Set easing on scale
-
-    View decoration() const { return me().decoration(); } ///< Get decoration
-    View &decoration(const View &newValue) { me().decoration(newValue); return *this; } ///< %Set decoration \see Shadow
-    View &decoration(Definition<View> &&f) { me().decoration(move(f)); return *this; } ///< Define decoration \see Shadow
 
     Size preferredSize() const { return me().preferredSize(); } ///< Get preferred size
     Size minSize() const { return me().minSize(); } ///< Get minimal size
@@ -389,6 +345,10 @@ public:
         }
     }
 
+protected:
+    struct State;
+
+public:
     /** \brief %Automatic geometry for children views
       * \ingroup ui
       */
@@ -606,6 +566,7 @@ protected:
     friend class IndexTracking<View>;
 
     /** \brief Internal state
+      * \hideinheritancegraph
       */
     struct State: public Surface::State
     {

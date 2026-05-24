@@ -65,7 +65,7 @@ struct AppBar::State final: public View::State
                 .associate(&button)
                 .onClicked([action]{ action(); })
                 .paper([this, button]{ return theme().appBarColor(button.pressed()); })
-                .size(sp(48), sp(56))
+                .size({sp(48), sp(56)})
                 .pos([this,right]{ return Point{width() - right, 0}; })
                 .add(
                     action.icon()
@@ -85,7 +85,7 @@ struct AppBar::State final: public View::State
         add(
             navButton_
             .onClicked([this]{ onNavButtonClicked(); })
-            .size(sp(56), sp(56))
+            .size({sp(56), sp(56)})
             .paper([this]{ return theme().appBarColor(navButton_.pressed()); })
             .visible([this]{ return showNavButton(); })
             .add(

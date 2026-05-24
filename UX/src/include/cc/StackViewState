@@ -11,6 +11,9 @@
 
 namespace cc {
 
+/** \brief Internal state
+  * \hideinheritancegraph
+  */
 struct StackView::State: public View::State
 {
     State(Size initialSize = Size{});

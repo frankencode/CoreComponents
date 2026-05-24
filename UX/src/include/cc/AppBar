@@ -46,7 +46,7 @@ public:
       */
     AppBar &onDismissed(Function<void()> &&f);
 
-protected:
+private:
     struct State;
 
     State &me();

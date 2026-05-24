@@ -45,7 +45,7 @@ int main()
         .associate(&view)
         .paper(Color::White)
         .paint([=]{
-            GlyphRun wrappedRun = run.wrap(view.size()[0] - 2 * margins, TextAlign::Justify);
+            GlyphRun wrappedRun = run.wrap(view.size()[0] - 2 * margins, TextAlign::Left);
             Painter{view}
             .setPen(0xE0F0FF)
             .rectangle(Point{0, 0}, Size{margins, view.size()[1]})

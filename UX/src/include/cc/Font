@@ -115,6 +115,8 @@ public:
       */
     String path() const;
 
+    /** Scale this font by a factor of \a scale
+      */
     Font &operator*=(double scale)
     {
         return size(

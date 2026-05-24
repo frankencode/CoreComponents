@@ -431,4 +431,16 @@ private:
 template<class T>
 inline String str(const Property<T> &property) { return str(property()); }
 
+/** \brief Convenience macro to generate property access methods
+  * Generates property access methods for reading, writing and defining the property
+  * \a name of type \a Type of \a Class.
+  */
+#define CC_PROPERTY(Class, Type, name) \
+    /** Get/bind value of #name */ \
+    Type name() const { return Class::me().name(); } \
+    /** Set value of #name */ \
+    auto name(this auto&& self, Type newValue) -> decltype(auto) { self.Class::me().name(newValue); return self; } \
+    /** Define value of #name */ \
+    auto name(this auto&& self, Definition<Type> &&f) -> decltype(auto) { self.Class::me().name(std::move(f)); return self; }
+
 } // namespace cc

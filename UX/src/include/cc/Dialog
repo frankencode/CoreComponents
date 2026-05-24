@@ -42,7 +42,8 @@ public:
     void close();
 
 protected:
-    /** Internal state
+    /** \brief Internal state
+      * \hideinheritancegraph
       */
     struct State: public View::State
     {

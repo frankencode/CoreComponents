@@ -135,7 +135,7 @@ private:
         const State &me() const { return Object::me.as<State>(); }
     };
 
-    struct State: public View::State
+    struct State final: public View::State
     {
         State();
 

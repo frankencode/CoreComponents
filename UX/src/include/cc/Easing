@@ -236,4 +236,21 @@ struct Easing
     };
 };
 
+/** \brief Convenience macro to generate property access and easing methods
+  * Generates property access methods for reading, writing and defining the property and its transition behavior
+  * \a name of type \a Type of \a Class.
+  */
+#define CC_PROPERTY_AND_EASING(Class, Type, name) \
+    /** Get/bind value of #name */ \
+    Type name() const { return Class::me().name(); } \
+    /** Set value of #name */ \
+    auto name(this auto&& self, Type newValue) -> decltype(auto) { self.Class::me().name(newValue); return self; } \
+    /** Define value of #name */ \
+    auto name(this auto&& self, Definition<Type> &&f) -> decltype(auto) { self.Class::me().name(std::move(f)); return self; } \
+    /** Set the easing \a curve and \a duration of #name */ \
+    auto name ## Easing(this auto&& self, const EasingCurve &curve, double duration, Function<bool()> &&direct = nullptr) -> decltype(auto) { \
+        Easing{self.Class::me().name, curve, duration, std::move(direct)}; \
+        return self; \
+    }
+
 } // namespace cc

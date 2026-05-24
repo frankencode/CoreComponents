@@ -49,9 +49,7 @@ public:
 
     Control &focus(bool newValue); ///< %Grab or release input focus
 
-    Cursor cursor() const { return me().cursor(); } ///< Get cursor
-    Control &cursor(Cursor newValue) { me().cursor(newValue); return *this; } ///< %Set cursor
-    Control &cursor(Definition<Cursor> &&f) { me().cursor(move(f)); return *this; } ///< %Define cursor
+    CC_PROPERTY(Control, Cursor, cursor)
 
     Point pointerPos() const { return me().pointerPos(); } ///< %Pointer position when hovered, pressed or clicked
 
@@ -83,6 +81,7 @@ protected:
     friend class Flickable;
 
     /** \brief Internal state
+      * \hideinheritancegraph
       */
     struct State: public View::State
     {

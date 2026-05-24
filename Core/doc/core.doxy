@@ -11,8 +11,7 @@
   * Fundamental high-level language primitives
   */
 
-/** \internal
-  * \defgroup basics Simple Objects
+/** \defgroup basics Simple Objects
   * Simple objects: ownership and life-cycle
   */
 

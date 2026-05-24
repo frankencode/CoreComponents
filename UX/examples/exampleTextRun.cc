@@ -32,7 +32,7 @@ int main()
     return
         View{}
         .associate(&view)
-        .size(sp(500), sp(500))
+        .size({sp(500), sp(500)})
         .paper(Color::White)
         .paint([=]{
             const auto size = view.size();

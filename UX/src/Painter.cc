@@ -475,7 +475,6 @@ void Painter::fillGlyphRunBackground(const FtGlyphRun &ftGlyphRun)
     FontMetrics metrics = ftGlyphRun.scaledFont().metrics();
     double dy0 = metrics.ascender() + (metrics.lineHeight() - (metrics.ascender() - metrics.descender())) / 2;
 
-    int byteOffset = 0;
     int glyphOffset = 0;
 
     const cairo_glyph_t *glyph0 = &ftGlyphRun.cairoGlyphs()[0];
@@ -501,7 +500,6 @@ void Painter::fillGlyphRunBackground(const FtGlyphRun &ftGlyphRun)
         }
 
         if (cluster) {
-            byteOffset += cluster->num_bytes;
             glyphOffset += cluster->num_glyphs;
         }
     }

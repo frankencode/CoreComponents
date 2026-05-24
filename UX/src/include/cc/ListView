@@ -14,7 +14,8 @@ namespace cc {
 
 /** \class ListView cc/ListView
   * \ingroup ui
-  * \brief %List view
+  * \brief List view
+  *
   * A ListView shows a vertically scrollable list of items of various dimensions.
   * \todo Add support for item spacing.
   */
@@ -46,16 +47,16 @@ public:
     }
 
     View header() const; ///< Get the header
-    ListView &header(const View &newValue); ///< %Set the header
+    ListView &header(const View &newValue); ///< Set the header
 
     View footer() const; ///< Get the footer
-    ListView &footer(const View &newValue); ///< %Set the footer
+    ListView &footer(const View &newValue); ///< Set the footer
 
     double leadSpace() const; ///< Leading spacing if no header is present
     ListView &leadSpace(double newValue); ///< Set leading spacing
 
     double tailSpace() const; ///< Trailing spacing if no footer is present
-    ListView &tailSpace(double newValue); ///< set trailing spacing
+    ListView &tailSpace(double newValue); ///< Set trailing spacing
 
     void deplete(); ///< Remove all children (list items)
 

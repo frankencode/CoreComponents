@@ -31,19 +31,14 @@ public:
       */
     Box &associate(Out<Box> self);
 
-    double radius() const { return me().radius(); } ///< Get radius
-    Box &radius(double newValue) { me().radius(newValue); return *this; } ///< %Set radius
-    Box &radius(Definition<double> &&f) { me().radius(move(f)); return *this; } ///< %Define radius
-
-    Color color() const { return me().color(); } ///< Get color
-    Box &color(Color newValue) { me().color(newValue); return *this; } ///< %Set color
-    Box &color(Definition<Color> &&f) { me().color(move(f)); return *this; } ///< %Define color
-
-    Pen border() const { return me().border(); } ///< Get border pen
-    Box &border(const Pen &newValue) { me().border(newValue); return *this; } ///< %Set border pen
-    Box &border(Definition<Pen> &&f) { me().border(move(f)); return *this; } ///< %Define border pen
+    CC_PROPERTY(Box, double, radius)
+    CC_PROPERTY(Box, Color, color)
+    CC_PROPERTY(Box, Pen, border)
 
 protected:
+    /** \brief Internal state
+      * \hideinheritancegraph
+      */
     struct State: public View::State
     {
         State();

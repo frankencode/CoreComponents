@@ -10,7 +10,7 @@
 
 namespace cc {
 
-/** \class Composite cc/basics
+/** \class Composite cc/Composite
   * \ingroup basics
   * \brief %Composite aggregate
   * \tparam T Value type

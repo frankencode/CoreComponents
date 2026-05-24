@@ -157,7 +157,7 @@ ListView::ListView():
 ListView::ListView(double width, double height):
     Flickable{new State}
 {
-    size(width, height);
+    me().size({width, height});
 }
 
 ListView &ListView::associate(Out<ListView> self)

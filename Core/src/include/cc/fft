@@ -7,7 +7,7 @@
 
 namespace cc {
 
-/** \class FFT cc/FFT
+/** \class FFT cc/fft
   * \brief A simple, yet fast, DFT (Discrete Fourier Transform)
   *
   * The FFT class is a speed optimized version of David Barina's uFFT.

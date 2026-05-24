@@ -1,5 +1,5 @@
-CoreComponents
-==============
+Welcome to CoreComponents!
+==========================
 
 About
 -----
