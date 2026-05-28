@@ -21,6 +21,8 @@ public:
       */
     const String &path() const;
 
+    /** Wait until all queued output has been transmitted
+      */
     void drain();
 
 private:

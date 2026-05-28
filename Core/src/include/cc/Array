@@ -98,6 +98,7 @@ public:
 
     /** Create a array of \a n items
       * \note For performance reasons the items are not initialized if the item type is a fundamental type (e.g. char).
+      * \see fill()
       */
     static Array allocate(long n)
     {
@@ -117,6 +118,7 @@ public:
 
     /** Create a array of \a dim[0] items
       * \note For performance reasons the items are not initialized if the item type is a fundamental type (e.g. char).
+      * \see fill()
       */
     Array(Dim<1> dim):
         Array{dim[0], Allocate{}}
