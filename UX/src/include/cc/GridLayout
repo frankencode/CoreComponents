@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2026 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/View>
+
+namespace cc {
+
+/** \class GridLayout cc/GridLayout
+  * \ingroup ui_layout
+  * \brief %Layout children views in a grid
+  */
+class GridLayout final: public View::Layout
+{
+public:
+    /** Create new column layout and assign it to \a view
+      */
+    GridLayout();
+
+    int columns() const; ///< Get number of layout columns
+    GridLayout &columns(int newValue); ///< Set number of layout columns
+    GridLayout &columns(Definition<int> &&f);  ///< Define number of layout columns
+
+    RowAlign rowAlign() const; ///< Get row alignment
+    GridLayout &rowAlign(RowAlign newValue); ///< Set row alignment
+    GridLayout &rowAlign(Definition<RowAlign> &&f); ///< Define row alignment
+
+    ColumnAlign columnAlign() const; ///< Get column alignment
+    GridLayout &columnAlign(ColumnAlign newValue); ///< Set column alignment
+    GridLayout &columnAlign(Definition<ColumnAlign> &&f); ///< Define column alignment
+
+private:
+    struct State;
+
+    State& me();
+    const State& me() const;
+};
+
+} // namespace cc

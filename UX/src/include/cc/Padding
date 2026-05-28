@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/Object>
+#include <cc/Point>
 
 namespace cc {
 

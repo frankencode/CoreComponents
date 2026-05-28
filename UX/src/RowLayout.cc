@@ -11,7 +11,7 @@
 
 namespace cc {
 
-struct  RowLayout::State final: public View::Layout::State
+struct RowLayout::State final: public View::Layout::State
 {
     State() = default;
 
