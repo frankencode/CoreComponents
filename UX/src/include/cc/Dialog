@@ -64,6 +64,7 @@ protected:
         void close();
 
     private:
+
         View buttonArea_;
     };
 

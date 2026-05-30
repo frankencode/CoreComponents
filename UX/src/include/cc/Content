@@ -1,0 +1,24 @@
+/*
+ * Copyright (C) 2026 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/View>
+#include <cc/ContentLayout>
+
+namespace cc {
+
+/** \class Content cc/Content
+  * \brief Window content view
+  * \ingroup ui
+  */
+class Content final: public View
+{
+public:
+    Content(): View{ContentLayout{}} {}
+};
+
+} // namespace cc

@@ -1,0 +1,41 @@
+/*
+ * Copyright (C) 2026 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/View>
+#include <cc/RowLayout>
+
+namespace cc {
+
+/** \class Row cc/Row
+  * \brief A view that arranges its children in a row
+  * \ingroup ui
+  */
+class Row final: public View
+{
+public:
+    /** Create a new row
+      */
+    Row(): View{RowLayout{}} {}
+
+    RowAlign align() const { return layout().align(); } ///< Get row alignment
+    Row &align(RowAlign newValue) { layout().align(newValue); return *this; } ///< %Set row alignment
+
+    Size margin() const { return View::layout().margin(); } ///< Get inner layout margins
+    Row &margin(Size newValue) { View::layout().margin(newValue); return *this; } ///< %Set inner layout margins
+
+    double spacing() const { return View::layout().spacing(); } ///< Get layout spacing
+    Row &spacing(double newValue) { View::layout().spacing(newValue); return *this; } ///< %Set layout spacing
+
+private:
+    RowLayout layout() const
+    {
+        return View::layout().as<RowLayout>();
+    }
+};
+
+} // namespace cc

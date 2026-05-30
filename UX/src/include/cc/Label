@@ -36,6 +36,12 @@ public:
       */
     Label(const String &text, const Font &font = Font{});
 
+    /** Create a new label
+      * \param f Definition of the label text
+      * \param font %Label font
+      */
+    explicit Label(Definition<String> &&f, const Font &font = Font{});
+
     /** Get a weak reference in \a self
       */
     Label &associate(Out<Label> self);

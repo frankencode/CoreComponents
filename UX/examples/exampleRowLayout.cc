@@ -1,6 +1,5 @@
-#include <cc/ColumnLayout>
-#include <cc/RowLayout>
 #include <cc/Label>
+#include <cc/layout>
 
 int main()
 {
@@ -9,27 +8,21 @@ int main()
     double gap = Font::defaultSize() * 1.5;
 
     return
-        View{}
+        Column{}
+        .spacing(gap)
+        .margin(gap)
         .paper(0xD0D0FF)
-        .add(Label{"• Item 1"})
-        .add(Label{"• Item 2"})
-        .add(Label{"• Item 3"})
-        .add(
-            View{}
-            .paper(0xD0FFD0)
-            .add(Label{"◦ Item A B C"})
-            .add(Label{"◦ Item B D E"})
-            .add(Label{"◦ Item C D F"})
-            .layout(
-                RowLayout{}
-                .spacing(gap)
-                .margin(gap)
-            )
-        )
-        .layout(
-            ColumnLayout{}
+        (Label{"• Item 1"})
+        (Label{"• Item 2"})
+        (Label{"• Item 3"})
+        (
+            Row{}
             .spacing(gap)
             .margin(gap)
+            .paper(0xD0FFD0)
+            (Label{"• Item A B C"})
+            (Label{"• Item B D E"})
+            (Label{"• Item C D F"})
         )
         .run();
 }

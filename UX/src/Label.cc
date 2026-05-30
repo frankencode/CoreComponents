@@ -133,6 +133,12 @@ Label::Label(const String &text, const Font &font):
     View{new State{text, font}}
 {}
 
+Label::Label(Definition<String> &&f, const Font &font):
+    Label{"", font}
+{
+    text(std::move(f));
+}
+
 Label &Label::associate(Out<Label> self)
 {
     return View::associate<Label>(self);

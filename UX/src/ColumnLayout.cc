@@ -11,22 +11,6 @@
 
 namespace cc {
 
-struct ColumnLayout::State final: public View::Layout::State
-{
-    State() = default;
-
-    Orientation orientation() const override { return Orientation::Vertical; }
-
-    void updateLayout();
-
-    Property<ColumnAlign> align { ColumnAlign::Left };
-    Property<double> indent { 0 };
-
-    Property<void> update { [this]{ updateLayout(); } };
-    bool firstTime_ { true };
-    bool setViewSize_ { false };
-};
-
 void ColumnLayout::State::updateLayout()
 {
     if (!hasView() || !view().hasWindow()) return;

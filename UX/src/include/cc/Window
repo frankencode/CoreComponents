@@ -13,6 +13,7 @@
 #include <cc/Object>
 #include <cc/Queue>
 #include <cc/bitmask>
+#include <cc/layout>
 
 namespace cc {
 

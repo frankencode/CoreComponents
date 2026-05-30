@@ -58,6 +58,10 @@ public:
         me().size({width, height});
     }
 
+    class Layout;
+
+    explicit View(Layout &&layout);
+
     /** Get a weak reference in \a self
       * \todo rename to "tie"
       */
@@ -248,6 +252,13 @@ public:
         me().removeChild(child);
     }
 
+    /** Syntax sugar for adding a child
+      */
+    View &operator()(const View &child)
+    {
+        return add(child);
+    }
+
     /** \copydoc addAbove
       */
     View &push(const View &child)
@@ -281,7 +292,7 @@ public:
 
     /** Get bounding box containing all visible child views including their paddings
       */
-    Rect childrenRect() const;
+    Rect childrenRect() const { return me().childrenRect(); }
 
     /** %Map view coordinates \a l to window coordinates
       */
@@ -633,6 +644,10 @@ protected:
         const Set<View> &children() const { return children_; } ///< Get set of all children
         const Set<View> &visibleChildren() const { return visibleChildren_; } ///< Get set of visible children
 
+        /** \copydoc View::childrenRect()
+          */
+        Rect childrenRect() const;
+
         /** \copydoc View::attach(const Object &)
           */
         void attach(const Object &other)
@@ -755,6 +770,8 @@ protected:
         void insertAt(Locator target, View child); ///< \copydoc View::insertAt(Locator, const View &)
         void insertAt(long index, const View &child); ///< \copydoc View::insertAt(long, const View &)
         void remove(const View &child) { removeChild(child); } ///< \copydoc View::remove()
+
+        void box(const View &child); ///< \copydoc View::box()
 
         virtual void insertChild(View child); ///< Handles the insertion of new children
         virtual void removeChild(View child); ///< Handles the removal of children

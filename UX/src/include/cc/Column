@@ -1,0 +1,44 @@
+/*
+ * Copyright (C) 2026 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/View>
+#include <cc/ColumnLayout>
+
+namespace cc {
+
+/** \class Column cc/Column
+  * \brief A view that arranges its children in a column
+  * \ingroup ui
+  */
+class Column final: public View
+{
+public:
+    /** Create a new column
+      */
+    Column(): View{ColumnLayout{}} {}
+
+    ColumnAlign align() const { return layout().align(); } ///< Get column alignment
+    Column &align(ColumnAlign newValue) { layout().align(newValue); return *this; } ///< %Set column alignment
+
+    double indent() const { return layout().indent(); } ///< Get horizontal indentation
+    Column &indent(double newValue) { layout().indent(newValue); return *this; } ///< %Set horizontal indentation
+
+    Size margin() const { return View::layout().margin(); } ///< Get inner layout margins
+    Column &margin(Size newValue) { View::layout().margin(newValue); return *this; } ///< %Set inner layout margins
+
+    double spacing() const { return View::layout().spacing(); } ///< Get layout spacing
+    Column &spacing(double newValue) { View::layout().spacing(newValue); return *this; } ///< %Set layout spacing
+
+private:
+    ColumnLayout layout() const
+    {
+        return View::layout().as<ColumnLayout>();
+    }
+};
+
+} // namespace cc

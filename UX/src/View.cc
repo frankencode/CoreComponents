@@ -99,6 +99,33 @@ void View::State::centerInParent()
     pos([this]{ return hasParent() ? (parent().size() - size()) / 2 : Point{}; });
 }
 
+Rect View::State::childrenRect() const
+{
+    double x0 = 0, x1 = width();
+    double y0 = 0, y1 = height();
+
+    for (const View &child: visibleChildren()) {
+        Rect rect = child.childrenRect();
+        rect.pos(
+            child.pos()
+            - Point{child.padding().left(), child.padding().top()}
+        );
+        rect.size(
+            rect.size()
+            + Size{
+                child.padding().left() + child.padding().right(),
+                child.padding().top() + child.padding().bottom()
+            }
+        );
+        if (rect.x0() < x0) x0 = rect.x0();
+        if (x1 < rect.x1()) x1 = rect.x1();
+        if (rect.y0() < y0) y0 = rect.y0();
+        if (y1 < rect.y1()) y1 = rect.y1();
+    }
+
+    return Rect{x0, y0, x1, y1};
+}
+
 Point View::State::mapToGlobal(Point l) const
 {
     for (const View::State *h = this; h->parent_(); h = h->parent_()) l += h->pos();
@@ -237,6 +264,13 @@ void View::State::insertAt(long index, const View &child)
 {
     if (children_.count() == 0) insertChild(child);
     else insertAt(children_.from(index), child);
+}
+
+void View::State::box(const View &child)
+{
+    while (children_.count() > 0) removeChild(children_.last());
+    insertChild(child);
+    size([this]{ return children_.first().size(); });
 }
 
 void View::State::insertChild(View child)
@@ -535,6 +569,12 @@ bool View::State::feedKeyEvent(KeyEvent &event) const
     return false;
 }
 
+View::View(Layout &&layout):
+    View{}
+{
+    this->layout(layout);
+}
+
 void View::pop()
 {
     Application{}.postEvent([view=*this]() mutable {
@@ -544,33 +584,6 @@ void View::pop()
         target.visible(false);
         view.remove(target);
     });
-}
-
-Rect View::childrenRect() const
-{
-    double x0 = 0, x1 = width();
-    double y0 = 0, y1 = height();
-
-    for (const View &child: visibleChildren()) {
-        Rect rect = child.childrenRect();
-        rect.pos(
-            child.pos()
-            - Point{child.padding().left(), child.padding().top()}
-        );
-        rect.size(
-            rect.size()
-            + Size{
-                child.padding().left() + child.padding().right(),
-                child.padding().top() + child.padding().bottom()
-            }
-        );
-        if (rect.x0() < x0) x0 = rect.x0();
-        if (x1 < rect.x1()) x1 = rect.x1();
-        if (rect.y0() < y0) y0 = rect.y0();
-        if (y1 < rect.y1()) y1 = rect.y1();
-    }
-
-    return Rect{x0, y0, x1, y1};
 }
 
 void View::show()

@@ -12,7 +12,7 @@ int main()
         View{sp(360), sp(360)}
         .add(
             TonalButton{"Test"}
-            ([=] mutable {
+            .onClicked([=] mutable {
                 AlertDialog{"Discard draft?"}
                 .associate(&dialog)
                 .addAction(

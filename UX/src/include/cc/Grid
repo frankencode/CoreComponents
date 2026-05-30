@@ -1,0 +1,50 @@
+/*
+ * Copyright (C) 2026 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#include <cc/View>
+#include <cc/GridLayout>
+
+namespace cc {
+
+/** \class Grid cc/Grid
+  * \brief A view that arranges its children in a grid
+  * \ingroup ui
+  */
+class Grid final: public View
+{
+public:
+    /** Create a new grid
+      */
+    Grid(): View{GridLayout{}} {}
+
+    int columns() const { return layout().columns(); } ///< Get number of layout columns
+    Grid &columns(int newValue) { layout().columns(newValue); return *this; } ///< Set number of layout columns
+    Grid &columns(Definition<int> &&f) { layout().columns(std::move(f)); return *this; } ///< Define number of layout columns
+
+    RowAlign rowAlign() const { return layout().rowAlign(); } ///< Get row alignment
+    Grid &rowAlign(RowAlign newValue) { layout().rowAlign(newValue); return *this; } ///< Set row alignment
+    Grid &rowAlign(Definition<RowAlign> &&f) { layout().rowAlign(std::move(f)); return *this; } ///< Define row alignment
+
+    ColumnAlign columnAlign() const { return layout().columnAlign(); } ///< Get column alignment
+    Grid &columnAlign(ColumnAlign newValue) { columnAlign(newValue); return *this; } ///< Set column alignment
+    Grid &columnAlign(Definition<ColumnAlign> &&f) { columnAlign(std::move(f)); return *this; } ///< Define column alignment
+
+    Size margin() const { return View::layout().margin(); } ///< Get inner layout margins
+    Grid &margin(Size newValue) { View::layout().margin(newValue); return *this; } ///< %Set inner layout margins
+
+    double spacing() const { return View::layout().spacing(); } ///< Get layout spacing
+    Grid &spacing(double newValue) { View::layout().spacing(newValue); return *this; } ///< %Set layout spacing
+
+private:
+    GridLayout layout() const
+    {
+        return View::layout().as<GridLayout>();
+    }
+};
+
+} // namespace cc

@@ -11,21 +11,6 @@
 
 namespace cc {
 
-struct RowLayout::State final: public View::Layout::State
-{
-    State() = default;
-
-    Orientation orientation() const override { return Orientation::Horizontal; }
-
-    void updateLayout();
-
-    Property<RowAlign> align { RowAlign::Top };
-
-    Property<void> update { [this]{ updateLayout(); } };
-    bool firstTime_ { true };
-    bool setViewSize_ { false };
-};
-
 void RowLayout::State::updateLayout()
 {
     if (!hasView() || !view().hasWindow()) return;

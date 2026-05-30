@@ -20,7 +20,7 @@ namespace cc {
 class RowLayout final: public View::Layout
 {
 public:
-    /** Create new column layout and assign it to \a view
+    /** Create new column layout
       */
     RowLayout();
 
@@ -28,7 +28,22 @@ public:
     RowLayout &align(RowAlign newValue); ///< %Set row alignment
 
 private:
-    struct State;
+    friend class Object;
+
+    struct State final: public View::Layout::State
+    {
+        State() = default;
+
+        Orientation orientation() const override { return Orientation::Horizontal; }
+
+        void updateLayout();
+
+        Property<RowAlign> align { RowAlign::Top };
+
+        Property<void> update { [this]{ updateLayout(); } };
+        bool firstTime_ { true };
+        bool setViewSize_ { false };
+    };
 
     State& me();
     const State& me() const;

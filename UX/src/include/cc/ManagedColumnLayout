@@ -18,6 +18,7 @@ namespace cc {
   * \brief Layout children views in a column and smartly adjust sizes as needed
   * \see ColumnLayout
   * \todo rename to SmartColumnLayout
+  * \todo add SmartColumn highlevel wrapper (and included it in <layout> header)
   */
 class ManagedColumnLayout final: public View::Layout
 {

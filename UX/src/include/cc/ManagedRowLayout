@@ -16,6 +16,8 @@ namespace cc {
   * \class ManagedRowLayout cc/ManagedRowLayout
   * \ingroup ui_layout
   * \brief Layout children views in a row and smartly adjust sizes as needed
+  * \todo rename to SmartRowLayout
+  * \todo add SmartRow highlevel wrapper (and included it in <layout> header)
   */
 class ManagedRowLayout final: public View::Layout
 {

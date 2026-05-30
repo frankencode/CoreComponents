@@ -11,23 +11,6 @@
 
 namespace cc {
 
-struct GridLayout::State final: public View::Layout::State
-{
-    State() = default;
-
-    Orientation orientation() const override { return Orientation::Vertical; }
-
-    void updateLayout();
-
-    Property<int> columns { 2 };
-    Property<RowAlign> rowAlign { RowAlign::Center };
-    Property<ColumnAlign> columnAlign { ColumnAlign::Left };
-
-    Property<void> update { [this]{ updateLayout(); } };
-    bool firstTime_ { true };
-    bool setViewSize_ { false };
-};
-
 void GridLayout::State::updateLayout()
 {
     if (!hasView() || !view().hasWindow()) return;

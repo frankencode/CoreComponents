@@ -83,6 +83,7 @@ public:
     /** Wait for I/O events
       * \param onReady %Callback function to handle I/O events
       * \param timeout %Timeout in milliseconds (or infinite if < 0)
+      * \todo Check API: Should this really have a function argument?
       */
     bool wait(const Function<void(const IoActivity &)> &onReady, int timeout = -1);
 

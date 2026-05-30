@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2026 Frank Mertens.
+ *
+ * Distribution and use is allowed under the terms of the GNU General Public License version 3
+ * (see CoreComponents/LICENSE-gpl-3.0).
+ *
+ */
+
+#pragma once
+
+#include <cc/View>
+
+namespace cc {
+
+/** \class ContentLayout cc/ContentLayout
+  * \ingroup ui_layout
+  * \brief Size the view by the size of its first child
+  */
+class ContentLayout final: public View::Layout
+{
+public:
+    /** Create new content layout
+      */
+    ContentLayout();
+
+private:
+    friend class Object;
+
+    struct State;
+
+    State& me();
+    const State& me() const;
+};
+
+} // namespace cc
