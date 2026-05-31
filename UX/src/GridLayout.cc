@@ -15,7 +15,7 @@ void GridLayout::State::updateLayout()
 {
     if (!hasView() || !view().hasWindow()) return;
 
-    int childrenCount = view().childrenCount();
+    int childrenCount = view().visibleChildren().count();
     int colCount = columns();
     int rowCount = childrenCount / colCount + (childrenCount % colCount > 0);
 
