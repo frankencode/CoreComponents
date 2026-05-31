@@ -18,13 +18,17 @@ struct TonalButton::State final: public TouchButton::State
     {}
 };
 
-TonalButton::TonalButton():
+TonalButton::TonalButton(Out<TonalButton> self):
     TouchButton{onDemand<State>}
-{}
+{
+    View::associate<TonalButton>(self);
+}
 
-TonalButton::TonalButton(const String &text, const Picture &icon):
+TonalButton::TonalButton(const String &text, const Picture &icon, Out<TonalButton> self):
     TouchButton{new State{text, icon}}
-{}
+{
+    View::associate<TonalButton>(self);
+}
 
 TonalButton &TonalButton::associate(Out<TonalButton> self)
 {

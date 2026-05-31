@@ -298,13 +298,17 @@ struct TimePicker::State final: public Dialog::State
     Trigger onRejected;
 };
 
-TimePicker::TimePicker():
+TimePicker::TimePicker(Out<TimePicker> self):
     Dialog{onDemand<State>}
-{}
+{
+    View::associate<TimePicker>(self);
+}
 
-TimePicker::TimePicker(int hour, int minute):
+TimePicker::TimePicker(int hour, int minute, Out<TimePicker> self):
     Dialog{new State{hour, minute}}
-{}
+{
+    View::associate<TimePicker>(self);
+}
 
 TimePicker &TimePicker::associate(Out<TimePicker> self)
 {

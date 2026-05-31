@@ -148,9 +148,11 @@ void SwitchControl::State::toggle()
     userInput();
 }
 
-SwitchControl::SwitchControl():
+SwitchControl::SwitchControl(Out<SwitchControl> self):
     InputControl{onDemand<State>}
-{}
+{
+    View::associate<SwitchControl>(self);
+}
 
 SwitchControl &SwitchControl::associate(Out<SwitchControl> self)
 {

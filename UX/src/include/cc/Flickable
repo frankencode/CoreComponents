@@ -21,17 +21,27 @@ namespace cc {
 class Flickable: public Control
 {
 public:
-    /** Create a primordial flickable
+    /** Create a flickable
       */
-    Flickable();
+    explicit Flickable(Out<Flickable> self = None{});
 
-    /** Create a new flickable of given size (\a width, \a height) and optionally with a custom \a carrier
+    /** Create a flickable of given \a size and optional custom \a carrier
       */
-    Flickable(double width, double height, const View &carrier = Pane{}, bool autoCenter = false);
+    explicit Flickable(const Size &size, const View &carrier = Pane{}, Out<Flickable> self = None{});
+
+    /** Create a flickable of given size (\a width, \a height) and optional custom \a carrier
+      */
+    Flickable(double width, double height, const View &carrier = Pane{}, Out<Flickable> self = None{}):
+        Flickable{Size{width, height}, carrier, self}
+    {}
 
     /** Create a new flickable with a custom \a carrier
       */
-    explicit Flickable(const View &carrier, bool autoCenter = false);
+    explicit Flickable(const View &carrier, Out<Flickable> self = None{});
+
+    /** Create a flickable with a custom \a carrier
+      */
+    Flickable(const View &carrier, bool autoCenter, Out<Flickable> self = None{});
 
     /** Get a weak reference in \a self
       */

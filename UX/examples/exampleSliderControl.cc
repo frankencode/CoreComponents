@@ -10,8 +10,7 @@ int main()
     return
         View{sp(640), sp(480)}
         .add(
-            SliderControl{}
-            .associate(&slider)
+            SliderControl{&slider}
             .onUserInput([slider]{
                 CC_INSPECT(slider.value());
             })

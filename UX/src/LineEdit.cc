@@ -308,17 +308,23 @@ Size LineEdit::State::maxSize() const
     return input_.maxSize() + Size{dp(28), dp(32)}.ceil();
 }
 
-LineEdit::LineEdit():
+LineEdit::LineEdit(Out<LineEdit> self):
     Control{onDemand<State>}
-{}
+{
+    View::associate<LineEdit>(self);
+}
 
-LineEdit::LineEdit(const String &label):
+LineEdit::LineEdit(const String &label, Out<LineEdit> self):
     Control{new State{label}}
-{}
+{
+    View::associate<LineEdit>(self);
+}
 
-LineEdit::LineEdit(const TextInput &input, const String &title):
+LineEdit::LineEdit(const TextInput &input, const String &title, Out<LineEdit> self):
     Control{new State{input, title}}
-{}
+{
+    View::associate<LineEdit>(self);
+}
 
 LineEdit &LineEdit::associate(Out<LineEdit> self)
 {

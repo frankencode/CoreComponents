@@ -1,19 +1,14 @@
-#include <cc/ColumnLayout>
 #include <cc/Divider>
 #include <cc/Slider>
 #include <cc/NumberCell>
+#include <cc/layout>
 
 int main()
 {
     using namespace cc;
 
     return
-        View{sp(400), sp(500)}
-        .layout(
-            ColumnLayout{}
-            .margin(sp(16))
-            .spacing(sp(8))
-        )
+        Column{sp(400), sp(500)}
         .add(
             Slider{}
             .leading(Icon::VolumeLow)

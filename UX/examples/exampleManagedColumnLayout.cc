@@ -31,9 +31,9 @@ int main()
                 .spacing(gap)
                 .margin(gap)
             )
-            .add(Text{"◦ Item A B C"})
-            .add(Text{"◦ Item B C D"})
-            .add(Text{"◦ Item C D E"})
+            .add(Text{"• Item A B C"})
+            .add(Text{"• Item B C D"})
+            .add(Text{"• Item C D E"})
         )
         .attach([=]{
             CC_INSPECT(view.minSize());

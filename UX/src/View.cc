@@ -569,10 +569,10 @@ bool View::State::feedKeyEvent(KeyEvent &event) const
     return false;
 }
 
-View::View(Layout &&layout):
-    View{}
+View::View(const Layout &layout, Out<View> self):
+    View{self}
 {
-    this->layout(layout);
+    View::layout(layout);
 }
 
 void View::pop()

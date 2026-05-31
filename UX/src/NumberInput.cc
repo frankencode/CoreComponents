@@ -116,9 +116,11 @@ String NumberInput::State::str(double x) const
     return t;
 }
 
-NumberInput::NumberInput():
+NumberInput::NumberInput(Out<NumberInput> self):
     TextInput{onDemand<State>}
-{}
+{
+    View::associate<NumberInput>(self);
+}
 
 NumberInput &NumberInput::associate(Out<NumberInput> self)
 {

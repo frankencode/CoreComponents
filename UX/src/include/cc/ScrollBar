@@ -21,13 +21,13 @@ namespace cc {
 class ScrollBar final: public DragArea
 {
 public:
-    /** Create a primordial scroll bar
+    /** Create a scroll bar
       */
-    ScrollBar();
+    explicit ScrollBar(Out<ScrollBar> self = None{});
 
-    /** Create a new scroll bar of given \a orientation
+    /** Create a scroll bar of given \a orientation
       */
-    explicit ScrollBar(Orientation orientation);
+    explicit ScrollBar(Orientation orientation, Out<ScrollBar> self = None{});
 
     /** Get a weak reference in \a self
       */

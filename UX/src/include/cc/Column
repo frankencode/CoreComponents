@@ -20,7 +20,26 @@ class Column final: public View
 public:
     /** Create a new column
       */
-    Column(): View{ColumnLayout{}} {}
+    explicit Column(Out<Column> self = None{}):
+        View{ColumnLayout{}}
+    {
+        View::associate<Column>(self);
+    }
+
+    /** Create a new column of size (\a width, \a height)
+      */
+    Column(double width, double height, Out<Column> self = None{}):
+        Column{Size{width, height}, self}
+    {}
+
+    /** Create a new column of \a size
+      */
+    explicit Column(const Size &size, Out<Column> self = None{}):
+        View{ColumnLayout{}}
+    {
+        View::associate<Column>(self);
+        View::size(size);
+    }
 
     ColumnAlign align() const { return layout().align(); } ///< Get column alignment
     Column &align(ColumnAlign newValue) { layout().align(newValue); return *this; } ///< %Set column alignment

@@ -45,9 +45,11 @@ public:
     }
 };
 
-Blind::Blind():
+Blind::Blind(Out<Blind> self):
     Control{onDemand<State>}
-{}
+{
+    View::associate<Blind>(self);
+}
 
 Blind &Blind::associate(Out<Blind> self)
 {

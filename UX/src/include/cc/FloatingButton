@@ -19,17 +19,21 @@ namespace cc {
 class FloatingButton final: public PushButton
 {
 public:
-    /** Create a primordial floating button
+    /** Create a floating button
       */
-    FloatingButton();
+    explicit FloatingButton(Out<FloatingButton> self = None{});
 
-    /** Create a regular floating button
+    /** Create a floating button with an icon
       */
-    explicit FloatingButton(const Picture &icon);
+    explicit FloatingButton(const Picture &icon, Out<FloatingButton> self = None{});
 
-    /** Create a floating button with a text label
+    /** Create a floating button with a text label and an icon
       */
-    explicit FloatingButton(const String &text, const Picture &icon = Picture{});
+    explicit FloatingButton(const String &text, Out<FloatingButton> self = None{});
+
+    /** Create a floating button with a text label and an icon
+      */
+    FloatingButton(const String &text, const Picture &icon, Out<FloatingButton> self = None{});
 
     /** Get a weak reference in \a self
       */

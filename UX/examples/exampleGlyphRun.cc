@@ -10,8 +10,7 @@ int main()
     View view;
 
     return
-        View{640, 480}
-        .associate(&view)
+        View{sp(500), &view}
         .paper(Color::White)
         .paint([=]{
             Point pos = 0.5 * (view.size() - Point{run.advance()[0], -run.maxAscender()});

@@ -19,9 +19,9 @@ namespace cc {
 class Blind final: public Control
 {
 public:
-    /** Create primordial blind
+    /** Create a new blind
       */
-    Blind();
+    explicit Blind(Out<Blind> self = None{});
 
     /** Get a weak reference in \a self
       */

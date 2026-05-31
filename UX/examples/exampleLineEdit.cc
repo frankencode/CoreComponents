@@ -12,8 +12,7 @@ int main()
     return
         View{sp(640), sp(480)}
         .add(
-            LineEdit{}
-            .associate(&edit)
+            LineEdit{&edit}
             .title("Username")
             .text("Nobody123")
             .icon(Icon::AccountPlus)
@@ -21,7 +20,7 @@ int main()
             .placeholder("JohnDoe")
             .help("Allowed characters include uppercase letters, lowercase letters, minus and underscore")
             .status([=]{ return dec(edit.text().count(), 2) + "/20"; })
-            .accept([=]() mutable {
+            .accept([=] mutable {
                 if (edit.text().count() == 0) {
                     edit.error("The username cannot be empty");
                     return false;
@@ -39,7 +38,7 @@ int main()
             .onAccepted([=]{
                 CC_INSPECT(edit.text());
             })
-            .pos({dp(16)})
+            .centerInParent()
         )
         .run();
 }

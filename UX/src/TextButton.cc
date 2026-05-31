@@ -18,17 +18,29 @@ struct TextButton::State final: public TouchButton::State
     {}
 };
 
-TextButton::TextButton():
+TextButton::TextButton(Out<TextButton> self):
     TouchButton{onDemand<State>}
-{}
+{
+    View::associate<TextButton>(self);
+}
 
-TextButton::TextButton(const String &text, const Picture &icon):
-    TouchButton{new State{text, icon}}
-{}
+TextButton::TextButton(const String &text, Out<TextButton> self):
+    TouchButton{new State{text}}
+{
+    View::associate<TextButton>(self);
+}
 
-TextButton::TextButton(const Picture &icon):
+TextButton::TextButton(const Picture &icon, Out<TextButton> self):
     TouchButton{new State{String{}, icon}}
-{}
+{
+    View::associate<TextButton>(self);
+}
+
+TextButton::TextButton(const String &text, const Picture &icon, Out<TextButton> self):
+    TouchButton{new State{text, icon}}
+{
+    View::associate<TextButton>(self);
+}
 
 TextButton &TextButton::associate(Out<TextButton> self)
 {

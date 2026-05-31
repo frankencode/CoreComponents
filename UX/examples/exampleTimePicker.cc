@@ -9,8 +9,7 @@ int main()
     TimePicker picker;
 
     return
-        TimePicker{}
-        .associate(&picker)
+        TimePicker{&picker}
         .onAccepted([=]{
             CC_INSPECT(picker.hour());
             CC_INSPECT(picker.minute());

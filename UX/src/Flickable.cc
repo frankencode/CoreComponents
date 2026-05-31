@@ -375,19 +375,30 @@ void Flickable::State::carrierStopped()
     preheat();
 }
 
-Flickable::Flickable():
+Flickable::Flickable(Out<Flickable> self):
     Control{onDemand<State>}
-{}
-
-Flickable::Flickable(double width, double height, const View &carrier, bool autoCenter):
-    Control{new State{carrier, autoCenter}}
 {
-    size(Size{width, height});
+    View::associate<Flickable>(self);
 }
 
-Flickable::Flickable(const View &carrier, bool autoCenter):
+Flickable::Flickable(const Size &size, const View &carrier, Out<Flickable> self):
+    Control{new State{carrier}}
+{
+    View::size(size);
+    View::associate<Flickable>(self);
+}
+
+Flickable::Flickable(const View &carrier, Out<Flickable> self):
+    Control{new State{carrier}}
+{
+    View::associate<Flickable>(self);
+}
+
+Flickable::Flickable(const View &carrier, bool autoCenter, Out<Flickable> self):
     Control{new State{carrier, autoCenter}}
-{}
+{
+    View::associate<Flickable>(self);
+}
 
 Flickable &Flickable::associate(Out<Flickable> self)
 {

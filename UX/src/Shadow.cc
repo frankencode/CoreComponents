@@ -52,9 +52,11 @@ struct Shadow::State final: public View::State
     Property<Color> color { 0x80000000u };
 };
 
-Shadow::Shadow():
+Shadow::Shadow(Out<Shadow> self):
     View{onDemand<State>}
-{}
+{
+    View::associate<Shadow>(self);
+}
 
 Shadow &Shadow::associate(Out<Shadow> self)
 {

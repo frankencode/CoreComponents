@@ -59,10 +59,6 @@ public:
       */
     PushButton &onTriggered(Function<void()> &&f);
 
-    /** \copydoc onTriggered()
-      */
-    PushButton &operator()(Function<void()> &&f);
-
 protected:
     struct State;
 

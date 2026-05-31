@@ -18,17 +18,29 @@ struct FloatingButton::State final: public PushButton::State
     {}
 };
 
-FloatingButton::FloatingButton():
+FloatingButton::FloatingButton(Out<FloatingButton> self):
     PushButton{onDemand<State>}
-{}
+{
+    View::associate<FloatingButton>(self);
+}
 
-FloatingButton::FloatingButton(const Picture &icon):
+FloatingButton::FloatingButton(const Picture &icon, Out<FloatingButton> self):
     PushButton{new State{String{}, icon}}
-{}
+{
+    View::associate<FloatingButton>(self);
+}
 
-FloatingButton::FloatingButton(const String &text, const Picture &icon):
+FloatingButton::FloatingButton(const String &text, Out<FloatingButton> self):
+    PushButton{new State{text}}
+{
+    View::associate<FloatingButton>(self);
+}
+
+FloatingButton::FloatingButton(const String &text, const Picture &icon, Out<FloatingButton> self):
     PushButton{new State{text, icon}}
-{}
+{
+    View::associate<FloatingButton>(self);
+}
 
 FloatingButton &FloatingButton::associate(Out<FloatingButton> self)
 {

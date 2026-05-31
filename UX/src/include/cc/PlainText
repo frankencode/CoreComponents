@@ -23,15 +23,20 @@ namespace cc {
 class PlainText final: public View
 {
 public:
-    /** Create a primordial text display
+    /** Create a plain text display
       */
-    PlainText();
+    explicit PlainText(Out<PlainText> self = None{});
 
-    /** Create a new text display
+    /** Create a plain text display
+      * \param text Initial text
+      */
+    explicit PlainText(const String &text, Out<PlainText> self = None{});
+
+    /** Create a plain text display
       * \param text Initial text
       * \param font Initial font
       */
-    explicit PlainText(const String &text, Font font = Font{});
+    PlainText(const String &text, Font font, Out<PlainText> self = None{});
 
     /** Get a weak reference in \a self
       */
@@ -64,8 +69,6 @@ public:
 
 private:
     struct State;
-
-    PlainText(const String &text, Font font, bool html);
 
     explicit PlainText(State *newState);
     explicit PlainText(CreateState onDemand);

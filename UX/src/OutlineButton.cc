@@ -18,13 +18,23 @@ struct OutlineButton::State final: public TouchButton::State
     {}
 };
 
-OutlineButton::OutlineButton():
+OutlineButton::OutlineButton(Out<OutlineButton> self):
     TouchButton{onDemand<State>}
-{}
+{
+    View::associate<OutlineButton>(self);
+}
 
-OutlineButton::OutlineButton(const String &text, const Picture &icon):
+OutlineButton::OutlineButton(const String &text, Out<OutlineButton> self):
+    TouchButton{new State{text}}
+{
+    View::associate<OutlineButton>(self);
+}
+
+OutlineButton::OutlineButton(const String &text, const Picture &icon, Out<OutlineButton> self):
     TouchButton{new State{text, icon}}
-{}
+{
+    View::associate<OutlineButton>(self);
+}
 
 OutlineButton &OutlineButton::associate(Out<OutlineButton> self)
 {

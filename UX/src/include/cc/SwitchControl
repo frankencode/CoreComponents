@@ -19,9 +19,9 @@ namespace cc {
 class SwitchControl final: public InputControl
 {
 public:
-    /** Create a primordial on/off switch
+    /** Create a on/off switch
       */
-    SwitchControl();
+    explicit SwitchControl(Out<SwitchControl> self = None{});
 
     /** Get a weak reference in \a self
       */

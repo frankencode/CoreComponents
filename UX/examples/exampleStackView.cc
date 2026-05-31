@@ -27,19 +27,16 @@ int main()
     View screen;
 
     return
-        StackView{sp(480), sp(800)}
-        .associate(&stack)
+        StackView{sp(480), sp(800), &stack}
         .push(
             View{}
             .add(
-                AppBar{}
-                .associate(&appBar)
+                AppBar{&appBar}
                 .title("User Manager")
                 .onNavigate([]{ ferr() << "Navigate!" << nl; })
             )
             .addBelow(
-                ListMenu{}
-                .associate(&menu)
+                ListMenu{&menu}
                 .populate([=](auto target) mutable {
                     for (int i = 0; i < 32; ++i) {
                         target.carrier().add(

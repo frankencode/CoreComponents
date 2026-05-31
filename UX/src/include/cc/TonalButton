@@ -19,13 +19,13 @@ namespace cc {
 class TonalButton final: public TouchButton
 {
 public:
-    /** Create a primordial tonal button
+    /** Create a tonal button
       */
-    TonalButton();
+    explicit TonalButton(Out<TonalButton> self = None{});
 
-    /** Create a new tonal button
+    /** Create a tonal button
       */
-    explicit TonalButton(const String &text, const Picture &icon = Picture{});
+    explicit TonalButton(const String &text, const Picture &icon = Picture{}, Out<TonalButton> self = None{});
 
     /** Get a weak reference in \a self
       */

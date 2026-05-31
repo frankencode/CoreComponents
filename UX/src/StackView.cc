@@ -87,13 +87,17 @@ void StackView::State::home()
     homing(false);
 }
 
-StackView::StackView():
+StackView::StackView(Out<StackView> self):
     View{onDemand<State>}
-{}
+{
+    View::associate<StackView>(self);
+}
 
-StackView::StackView(double width, double height):
-    View{new State{Size{width, height}}}
-{}
+StackView::StackView(const Size &size, Out<StackView> self):
+    View{new State{size}}
+{
+    View::associate<StackView>(self);
+}
 
 StackView::StackView(CreateState onDemand):
     View{onDemand}

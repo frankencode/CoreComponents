@@ -19,13 +19,17 @@ namespace cc {
 class OutlineButton final: public TouchButton
 {
 public:
-    /** Create a primordial outline button
+    /** Create a outline button
       */
-    OutlineButton();
+    explicit OutlineButton(Out<OutlineButton> self = None{});
 
-    /** Create a new outline button
+    /** Create a outline button with text label
       */
-    explicit OutlineButton(const String &text, const Picture &icon = Picture{});
+    explicit OutlineButton(const String &text, Out<OutlineButton> self = None{});
+
+    /** Create a outline button with text label and an icon
+      */
+    OutlineButton(const String &text, const Picture &icon, Out<OutlineButton> self = None{});
 
     /** Get a weak reference in \a self
       */

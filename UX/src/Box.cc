@@ -82,14 +82,17 @@ Box::State::State()
     });
 }
 
-Box::Box():
+Box::Box(Out<Box> self):
     View{onDemand<Box::State>}
-{}
+{
+    View::associate<Box>(self);
+}
 
-Box::Box(double width, double height):
+Box::Box(const Size &size, Out<Box> self):
     View{new State}
 {
-    size(Size{width, height});
+    View::size(size);
+    View::associate<Box>(self);
 }
 
 Box &Box::associate(Out<Box> self)

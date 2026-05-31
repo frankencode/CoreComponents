@@ -10,6 +10,7 @@
 #include <cc/Text>
 #include <cc/LineSource>
 #include <cc/Format>
+#include <cc/debugging>
 
 namespace cc {
 
@@ -56,6 +57,8 @@ struct LogView::State final: public ListView::State
 
     void appendLine(const String &line)
     {
+        CC_INSPECT(line);
+
         carrier().add(
             Text{line, font()}
             .margin([this]{ return Size{margin()[0], 0}; })
@@ -75,14 +78,17 @@ struct LogView::State final: public ListView::State
     List<String> lines_;
 };
 
-LogView::LogView():
+LogView::LogView(Out<LogView> self):
     ListView{onDemand<State>}
-{}
+{
+    View::associate<LogView>(self);
+}
 
-LogView::LogView(double width, double height):
+LogView::LogView(const Size &size, Out<LogView> self):
     ListView{new State}
 {
-    size({width, height});
+    View::size(size);
+    View::associate<LogView>(self);
 }
 
 LogView &LogView::associate(Out<LogView> self)

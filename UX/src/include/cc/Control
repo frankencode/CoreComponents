@@ -23,13 +23,13 @@ class Flickable;
 class Control: public View
 {
 public:
-    /** Create a primordial control
+    /** Create a new control
       */
-    Control();
+    explicit Control(Out<Control> self = None{});
 
     /** Create a new top-level control of size (\a width, \a height)
       */
-    Control(double width, double height);
+    Control(double width, double height, Out<Control> self = None{});
 
     /** Get a weak reference in \a self
       */

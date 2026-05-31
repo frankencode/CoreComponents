@@ -58,13 +58,17 @@ struct Switch::State final: public Control::State
     SwitchControl switch_;
 };
 
-Switch::Switch():
+Switch::Switch(Out<Switch> self):
     Control{onDemand<State>}
-{}
+{
+    View::associate<Switch>(self);
+}
 
-Switch::Switch(const String &text):
+Switch::Switch(const String &text, Out<Switch> self):
     Control{new State{text}}
-{}
+{
+    View::associate<Switch>(self);
+}
 
 Switch &Switch::associate(Out<Switch> self)
 {

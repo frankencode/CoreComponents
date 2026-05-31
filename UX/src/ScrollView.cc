@@ -62,14 +62,17 @@ ScrollView::State::State(const View &carrier):
     add(hScroll_);
 }
 
-ScrollView::ScrollView():
+ScrollView::ScrollView(Out<ScrollView> self):
     View{onDemand<State>}
-{}
+{
+    View::associate<ScrollView>(self);
+}
 
-ScrollView::ScrollView(double width, double height):
+ScrollView::ScrollView(const Size &size, Out<ScrollView> self):
     View{new State}
 {
-    size(Size{width, height});
+    View::size(size);
+    View::associate<ScrollView>(self);
 }
 
 ScrollView::ScrollView(const View &carrier):

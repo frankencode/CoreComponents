@@ -19,9 +19,9 @@ namespace cc {
 class NumberInput final: public TextInput
 {
 public:
-    /** Create a primordial number input
+    /** Create a number input
       */
-    NumberInput();
+    explicit NumberInput(Out<NumberInput> self = None{});
 
     /** Get a weak reference in \a self
       */

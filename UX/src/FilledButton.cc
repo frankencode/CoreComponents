@@ -18,13 +18,23 @@ struct FilledButton::State final: public TouchButton::State
     {}
 };
 
-FilledButton::FilledButton():
+FilledButton::FilledButton(Out<FilledButton> self):
     TouchButton{onDemand<State>}
-{}
+{
+    View::associate<FilledButton>(self);
+}
 
-FilledButton::FilledButton(const String &text, const Picture &icon):
+FilledButton::FilledButton(const String &text, Out<FilledButton> self):
+    TouchButton{new State{text}}
+{
+    View::associate<FilledButton>(self);
+}
+
+FilledButton::FilledButton(const String &text, const Picture &icon, Out<FilledButton> self):
     TouchButton{new State{text, icon}}
-{}
+{
+    View::associate<FilledButton>(self);
+}
 
 FilledButton &FilledButton::associate(Out<FilledButton> self)
 {

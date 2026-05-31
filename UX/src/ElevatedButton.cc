@@ -18,17 +18,29 @@ struct ElevatedButton::State final: public PushButton::State
     {}
 };
 
-ElevatedButton::ElevatedButton():
+ElevatedButton::ElevatedButton(Out<ElevatedButton> self):
     PushButton{onDemand<State>}
-{}
+{
+    View::associate<ElevatedButton>(self);
+}
 
-ElevatedButton::ElevatedButton(const Picture &icon):
+ElevatedButton::ElevatedButton(const Picture &icon, Out<ElevatedButton> self):
     PushButton{new State{String{}, icon}}
-{}
+{
+    View::associate<ElevatedButton>(self);
+}
 
-ElevatedButton::ElevatedButton(const String &text, const Picture &icon):
+ElevatedButton::ElevatedButton(const String &text, Out<ElevatedButton> self):
+    PushButton{new State{text}}
+{
+    View::associate<ElevatedButton>(self);
+}
+
+ElevatedButton::ElevatedButton(const String &text, const Picture &icon, Out<ElevatedButton> self):
     PushButton{new State{text, icon}}
-{}
+{
+    View::associate<ElevatedButton>(self);
+}
 
 ElevatedButton &ElevatedButton::associate(Out<ElevatedButton> self)
 {

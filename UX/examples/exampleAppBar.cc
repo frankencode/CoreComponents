@@ -9,9 +9,8 @@ int main()
 
     return
         View{sp(360), sp(600)}
-        .add(
-            AppBar{}
-            .associate(&appBar)
+        (
+            AppBar{&appBar}
             .title("Hello, world!")
             .onDismissed([]{
                 ferr() << "Back!" << nl;

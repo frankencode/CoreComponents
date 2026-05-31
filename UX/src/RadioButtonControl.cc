@@ -80,9 +80,11 @@ struct RadioButtonControl::State final: public InputControl::State
     Trigger onSelected;
 };
 
-RadioButtonControl::RadioButtonControl():
+RadioButtonControl::RadioButtonControl(Out<RadioButtonControl> self):
     InputControl{onDemand<State>}
-{}
+{
+    View::associate<RadioButtonControl>(self);
+}
 
 RadioButtonControl &RadioButtonControl::associate(Out<RadioButtonControl> self)
 {

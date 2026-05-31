@@ -21,9 +21,9 @@ namespace cc {
 class RadioButtonControl final: public InputControl
 {
 public:
-    /** Create a primordial radio button control
+    /** Create a radio button control
       */
-    RadioButtonControl();
+    explicit RadioButtonControl(Out<RadioButtonControl> self = None{});
 
     /** Get a weak reference in \a self
       */

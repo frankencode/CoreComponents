@@ -83,14 +83,17 @@ void Control::State::onTextEdited(const String &text, int start, int length)
 void Control::State::onTextInput(const String &text)
 {}
 
-Control::Control():
+Control::Control(Out<Control> self):
     View{createState}
-{}
+{
+    View::associate<Control>(self);
+}
 
-Control::Control(double width, double height):
+Control::Control(double width, double height, Out<Control> self):
     View{new State}
 {
     size(Size{width, height});
+    View::associate<Control>(self);
 }
 
 Control &Control::associate(Out<Control> self)

@@ -21,13 +21,13 @@ namespace cc {
 class TimePicker final: public Dialog
 {
 public:
-    /** Create a primordial time picker
+    /** Create a time picker
       */
-    TimePicker();
+    explicit TimePicker(Out<TimePicker> self = None{});
 
-    /** Create a new time picker showing \a hour and \a minute
+    /** Create a time picker showing \a hour and \a minute
       */
-    TimePicker(int hour, int minute);
+    TimePicker(int hour, int minute, Out<TimePicker> self);
 
     /** Get a weak reference in \a self
       */

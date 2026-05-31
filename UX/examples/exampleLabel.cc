@@ -11,7 +11,7 @@ int main()
     Label label;
 
     return
-        View{sp(500), sp(500)}
+        View{sp(500)}
         .paper(Color::White)
         .add(
             Label{}

@@ -19,13 +19,17 @@ namespace cc {
 class FilledButton final: public TouchButton
 {
 public:
-    /** Create a primordial filled button
+    /** Create a filled button
       */
-    FilledButton();
+    explicit FilledButton(Out<FilledButton> self = None{});
 
-    /** Create a new filled button
+    /** Create a filled button with \a text
       */
-    explicit FilledButton(const String &text, const Picture &icon = Picture{});
+    explicit FilledButton(const String &text, Out<FilledButton> self = None{});
+
+    /** Create a filled button with \a text and \a icon
+      */
+    FilledButton(const String &text, const Picture &icon, Out<FilledButton> self = None{});
 
     /** Get a weak reference in \a self
       */

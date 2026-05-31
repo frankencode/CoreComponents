@@ -21,13 +21,19 @@ namespace cc {
 class ScrollView: public View
 {
 public:
-    /** Create a primordial scroll view
+    /** Create a scroll view
       */
-    ScrollView();
+    explicit ScrollView(Out<ScrollView> self = None{});
 
-    /** Create a new scroll view of size (\a width, \a height)
+    /** Create a scroll view of size (\a width, \a height)
       */
-    ScrollView(double width, double height);
+    explicit ScrollView(const Size &size, Out<ScrollView> self = None{});
+
+    /** Create a scroll view of size (\a width, \a height)
+      */
+    ScrollView(double width, double height, Out<ScrollView> self = None{}):
+        ScrollView{Size{width, height}, self}
+    {}
 
     /** Create a new scroll view with custom \a carrier
       */

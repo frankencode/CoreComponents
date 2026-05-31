@@ -27,9 +27,9 @@ int main()
                 .spacing(gap)
                 .margin(gap)
             )
-            .add(Text{"◦ Item A B C"})
-            .add(Text{"◦ Item B D E"})
-            .add(Text{"◦ Item C D F"})
+            .add(Text{"• Item A B C"})
+            .add(Text{"• Item B D E"})
+            .add(Text{"• Item C D F"})
         )
         .run();
 }

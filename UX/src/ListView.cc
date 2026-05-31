@@ -150,14 +150,17 @@ void ListView::State::setFooter(const View &newValue)
     footer().visible([this]{ return footer().pos()[1] < height(); });
 }
 
-ListView::ListView():
+ListView::ListView(Out<ListView> self):
     Flickable{onDemand<State>}
-{}
+{
+    View::associate<ListView>(self);
+}
 
-ListView::ListView(double width, double height):
+ListView::ListView(const Size &size, Out<ListView> self):
     Flickable{new State}
 {
-    me().size({width, height});
+    View::size(size);
+    View::associate<ListView>(self);
 }
 
 ListView &ListView::associate(Out<ListView> self)

@@ -74,14 +74,17 @@ Plot::State::State()
     });
 }
 
-Plot::Plot():
+Plot::Plot(Out<Plot> self):
     View{onDemand<State>}
-{}
+{
+    View::associate<Plot>(self);
+}
 
-Plot::Plot(double width, double height):
+Plot::Plot(const Size &size, Out<Plot> self):
     View{new State}
 {
-    size(Size{width, height});
+    View::size(size);
+    View::associate<Plot>(self);
 }
 
 Plot &Plot::associate(Out<Plot> self)

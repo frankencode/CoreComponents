@@ -24,9 +24,9 @@ public:
       */
     static double height();
 
-    /** Create a primordial application bar
+    /** Create a new application bar and return weak reference in \a self
       */
-    AppBar();
+    explicit AppBar(Out<AppBar> self = None{});
 
     /** Get a weak reference in \a self
       */

@@ -1,6 +1,6 @@
-#include <cc/ManagedRowLayout>
 #include <cc/SliderControl>
 #include <cc/Label>
+#include <cc/layout>
 #include <cc/debugging>
 
 int main()
@@ -10,9 +10,7 @@ int main()
     View view;
 
     return
-        View{}
-        .associate(&view)
-        .size({sp(480), sp(48)})
+        View{{sp(480), sp(48)}, &view}
         .layout(
             ManagedRowLayout{}
             .align(RowAlign::Center)

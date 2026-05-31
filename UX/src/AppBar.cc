@@ -124,9 +124,11 @@ double AppBar::height()
     return sp(56);
 }
 
-AppBar::AppBar():
+AppBar::AppBar(Out<AppBar> self):
     View{onDemand<State>}
-{}
+{
+    View::associate<AppBar>(self);
+}
 
 AppBar &AppBar::associate(Out<AppBar> self)
 {

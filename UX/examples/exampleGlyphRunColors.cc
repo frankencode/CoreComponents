@@ -41,8 +41,7 @@ int main()
     View view;
 
     return
-        View{sp(500), sp(500)}
-        .associate(&view)
+        View{sp(500), &view}
         .paper(Color::White)
         .paint([=]{
             GlyphRun wrappedRun = run.wrap(view.size()[0] - 2 * margins, TextAlign::Left);

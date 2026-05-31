@@ -11,8 +11,7 @@ int main()
     ListMenu menu;
 
     return
-        ListMenu{sp(500), sp(500)}
-        .associate(&menu)
+        ListMenu{sp(500), &menu}
         .header(
             Label{}
             .margin(sp(16))

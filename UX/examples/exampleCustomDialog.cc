@@ -12,11 +12,10 @@ int main()
     View view;
 
     return
-        View{sp(360), sp(360)}
-        .associate(&view)
-        .add(
+        View{sp(360), sp(360), &view}
+        (
             TonalButton{"Continue"}
-            ([=] mutable {
+            .onClicked([=] mutable {
                 CustomDialog{}
                 .associate(&dialog)
                 .addContent(
@@ -25,14 +24,14 @@ int main()
                 )
                 .addAction(
                     Action{"Cancel"}
-                    ([=] mutable {
+                    .onTriggered([=] mutable {
                         CC_DEBUG << "Cancel";
                         dialog.close();
                     })
                 )
                 .addAction(
                     Action{"OK"}
-                    ([=] mutable {
+                    .onTriggered([=] mutable {
                         CC_DEBUG << "OK";
                         dialog.close();
                     })

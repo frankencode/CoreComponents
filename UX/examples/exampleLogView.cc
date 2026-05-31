@@ -3,8 +3,9 @@
 #include <cc/System>
 #include <cc/FlickableIndicator>
 #include <cc/Date>
+#include <cc/debugging>
 
-/** \todo Fix example, timer seems to not run?
+/** \todo Fix example, LogView seems to not show newly appended lines.
   */
 int main()
 {
@@ -13,13 +14,14 @@ int main()
     LogView log;
 
     return
-        LogView{sp(500), sp(500)}
-        .associate(&log)
+        LogView{sp(500), &log}
         .add(FlickableIndicator{})
         .attach(
             Timer{0.5}
             .onTimeout([log]() mutable {
-                log.appendText(Date::now());
+                String text = Date::now();
+                log.appendText(text);
+                CC_INSPECT(text);
             })
             .start()
         )

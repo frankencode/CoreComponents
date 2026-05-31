@@ -10,15 +10,13 @@ int main()
     Blind blind;
 
     return
-        View{sp(640), sp(480)}
-        .associate(&view)
-        .add(
+        View{sp(640), sp(480), &view}
+        (
             TonalButton{"Open"}
             .onClicked([=]() mutable {
                 view.push(
-                    Blind{}
-                    .associate(&blind)
-                    .add(
+                    Blind{&blind}
+                    (
                         TonalButton{"Close"}
                         .onClicked([=]() mutable {
                             view.pop();
@@ -32,7 +30,7 @@ int main()
             })
             .centerInParent()
         )
-        .add(
+        (
             TonalButton{"Test 123"}
             .onClicked([]{ CC_DEBUG; })
             .pos({sp(48), sp(48)})

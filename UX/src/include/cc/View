@@ -50,25 +50,42 @@ public:
       */
     View() = default;
 
-    /** Create a new view of initial size (\a width, \a height)
+    /** Create a view
       */
-    View(double width, double height):
-        View{new State}
+    explicit View(Out<View> self)
     {
-        me().size({width, height});
+        View::associate(self);
     }
+
+    /** Create a view of initial \a size
+      */
+    explicit View(const Size &size, Out<View> self = None{})
+    {
+        me().size(size);
+        if (self.requested()) self = weak<View>();
+    }
+
+    /** Create a view of initial size (\a width, \a height)
+      */
+    View(double width, double height, Out<View> self = None{}):
+        View{Size{width, height}, self}
+    {}
 
     class Layout;
 
-    explicit View(Layout &&layout);
+    /** Create a view organizing its children with \a layout
+      */
+    explicit View(const Layout &layout, Out<View> self = None{});
 
     /** Get a weak reference in \a self
-      * \todo rename to "tie"
+      * \todo Remove overloads in specialized classes and make this method protected.
       */
     View &associate(Out<View> self)
     {
-        me();
-        self = weak<View>();
+        if (self.requested()) {
+            me();
+            self = weak<View>();
+        }
         return *this;
     }
 
@@ -207,42 +224,42 @@ public:
 
     /** \copydoc addAbove()
       */
-    View &add(const View &child)
+    auto add(this auto &&self, const View &child) -> decltype(auto)
     {
-        me().insertChild(child);
-        return *this;
+        self.View::me().insertChild(child);
+        return self;
     }
 
     /** Add new \a child placed visually above all existing children
       */
-    View &addAbove(const View &child)
+    auto addAbove(this auto &&self, const View &child) -> decltype(auto)
     {
-        me().insertChild(child);
-        return *this;
+        self.View::me().insertChild(child);
+        return self;
     }
 
     /** Add \a child place visually below all existing children
       */
-    View &addBelow(const View &child)
+    auto addBelow(this auto &&self, const View &child) -> decltype(auto)
     {
-        me().addBelow(child);
-        return *this;
+        self.View::me().addBelow(child);
+        return self;
     }
 
     /** Insert new \a child at \a target
       */
-    View &insertAt(Locator target, const View &child)
+    auto insertAt(this auto &&self, Locator target, const View &child) -> decltype(auto)
     {
-        me().insertAt(target, child);
-        return *this;
+        self.View::me().insertAt(target, child);
+        return self;
     }
 
     /** Insert new \a child at \a index
       */
-    View &insertAt(long index, const View &child)
+    auto insertAt(this auto &&self, long index, const View &child) -> decltype(auto)
     {
-        me().insertAt(index, child);
-        return *this;
+        self.View::me().insertAt(index, child);
+        return self;
     }
 
     /** Remove a child
@@ -254,16 +271,16 @@ public:
 
     /** Syntax sugar for adding a child
       */
-    View &operator()(const View &child)
+    auto operator()(this auto &&self, const View &child) -> decltype(auto)
     {
-        return add(child);
+        return self.View::add(child);
     }
 
     /** \copydoc addAbove
       */
-    View &push(const View &child)
+    auto push(this auto &&self, const View &child) -> decltype(auto)
     {
-        return addAbove(child);
+        return self.View::addAbove(child);
     }
 
     /** Remove the top-most visible child
@@ -417,7 +434,7 @@ public:
 
     Layout layout() const { return me().layout(); } ///< Get layout
 
-    View &layout(const Layout &newValue) { me().layout(newValue); return *this; } ///< %Set layout
+    auto layout(this auto &&self, const Layout &newValue) -> decltype(auto){ self.View::me().layout(newValue); return self; } ///< %Set layout
 
     /** Capture a rendered image of this view (including its children) as rendered on the screen
       * \param image %Output image (needs to be allocated by the caller)
@@ -444,29 +461,29 @@ public:
     Point centerLeft  () const { return me().centerLeft(); } ///< Get this view's center-left point
     Point centerRight () const { return me().centerRight(); } ///< Get this view's center-right point
 
-    View &topLeft      (Point newValue) { me().topLeft(newValue); return *this; } ///< Make this view's top-left match \a newValue
-    View &topCenter    (Point newValue) { me().topCenter(newValue); return *this; } ///< Make this view's top-center match \a newValue
-    View &topRight     (Point newValue) { me().topRight(newValue); return *this; } ///< Make this view's top-right match \a newValue
-    View &bottomLeft   (Point newValue) { me().bottomLeft(newValue); return *this; } ///< Make this view's bottom-left match \a newValue
-    View &bottomCenter (Point newValue) { me().bottomCenter(newValue); return *this; } ///< Make this view's bottom-center match \a newValue
-    View &bottomRight  (Point newValue) { me().bottomRight(newValue); return *this; } ///< Make this view's bottom-right match \a newValue
-    View &centerLeft   (Point newValue) { me().centerLeft(newValue); return *this; } ///< Make this view's center-left match \a newValue
-    View &centerRight  (Point newValue) { me().centerRight(newValue); return *this; } ///< Make this view's center-right match \a newValue
-    View &center       (Point newValue) { me().center(newValue); return *this; } ///< Make this view's center match \a newValue
+    auto topLeft      (this auto &&self, Point newValue) -> decltype(auto) { self.View::me().topLeft(newValue); return self; } ///< Make this view's top-left match \a newValue
+    auto topCenter    (this auto &&self, Point newValue) -> decltype(auto) { self.View::me().topCenter(newValue); return self; } ///< Make this view's top-center match \a newValue
+    auto topRight     (this auto &&self, Point newValue) -> decltype(auto) { self.View::me().topRight(newValue); return self; } ///< Make this view's top-right match \a newValue
+    auto bottomLeft   (this auto &&self, Point newValue) -> decltype(auto) { self.View::me().bottomLeft(newValue); return self; } ///< Make this view's bottom-left match \a newValue
+    auto bottomCenter (this auto &&self, Point newValue) -> decltype(auto) { self.View::me().bottomCenter(newValue); return self; } ///< Make this view's bottom-center match \a newValue
+    auto bottomRight  (this auto &&self, Point newValue) -> decltype(auto) { self.View::me().bottomRight(newValue); return self; } ///< Make this view's bottom-right match \a newValue
+    auto centerLeft   (this auto &&self, Point newValue) -> decltype(auto) { self.View::me().centerLeft(newValue); return self; } ///< Make this view's center-left match \a newValue
+    auto centerRight  (this auto &&self, Point newValue) -> decltype(auto) { self.View::me().centerRight(newValue); return self; } ///< Make this view's center-right match \a newValue
+    auto center       (this auto &&self, Point newValue) -> decltype(auto) { self.View::me().center(newValue); return self; } ///< Make this view's center match \a newValue
 
-    View &topLeft     (Definition<Point> &&a) { pos(move(a)); return *this; } ///< %Anchor the top-left corner to \a a
-    View &topCenter   (Definition<Point> &&a) { me().topCenter(move(a)); return *this; } ///< %Anchor the top-center corner to \a a
-    View &topRight    (Definition<Point> &&a) { me().topRight(move(a)); return *this; } ///< %Anchor the top-right corner to \a a
-    View &bottomLeft  (Definition<Point> &&a) { me().bottomLeft(move(a)); return *this; } ///< %Anchor the bottom-left corner to \a a
-    View &bottomCenter(Definition<Point> &&a) { me().bottomCenter(move(a)); return *this; } ///< %Anchor the bottom-center corner to \a a
-    View &bottomRight (Definition<Point> &&a) { me().bottomRight(move(a)); return *this; } ///< %Anchor the bottom-right corner to \a a
-    View &centerLeft  (Definition<Point> &&a) { me().centerLeft(move(a)); return *this; } ///< %Anchor the center-left to \a a
-    View &centerRight (Definition<Point> &&a) { me().centerRight(move(a)); return *this; } ///< %Anchor the center-right to \a a
-    View &center      (Definition<Point> &&a) { me().center(move(a)); return *this; } ///< %Anchor the center to \a a
+    auto topLeft     (this auto &&self, Definition<Point> &&a) -> decltype(auto) { self.pos(move(a)); return self; } ///< %Anchor the top-left corner to \a a
+    auto topCenter   (this auto &&self, Definition<Point> &&a) -> decltype(auto) { self.View::me().topCenter(move(a)); return self; } ///< %Anchor the top-center corner to \a a
+    auto topRight    (this auto &&self, Definition<Point> &&a) -> decltype(auto) { self.View::me().topRight(move(a)); return self; } ///< %Anchor the top-right corner to \a a
+    auto bottomLeft  (this auto &&self, Definition<Point> &&a) -> decltype(auto) { self.View::me().bottomLeft(move(a)); return self; } ///< %Anchor the bottom-left corner to \a a
+    auto bottomCenter(this auto &&self, Definition<Point> &&a) -> decltype(auto) { self.View::me().bottomCenter(move(a)); return self; } ///< %Anchor the bottom-center corner to \a a
+    auto bottomRight (this auto &&self, Definition<Point> &&a) -> decltype(auto) { self.View::me().bottomRight(move(a)); return self; } ///< %Anchor the bottom-right corner to \a a
+    auto centerLeft  (this auto &&self, Definition<Point> &&a) -> decltype(auto) { self.View::me().centerLeft(move(a)); return self; } ///< %Anchor the center-left to \a a
+    auto centerRight (this auto &&self, Definition<Point> &&a) -> decltype(auto) { self.View::me().centerRight(move(a)); return self; } ///< %Anchor the center-right to \a a
+    auto center      (this auto &&self, Definition<Point> &&a) -> decltype(auto) { self.View::me().center(move(a)); return self; } ///< %Anchor the center to \a a
 
     /** Anchor this view's center to its parent's center
       */
-    View &centerInParent() { me().centerInParent(); return *this; }
+    auto centerInParent(this auto &&self) -> decltype(auto) { self.View::me().centerInParent(); return self; }
 
     ///@}
 
@@ -476,79 +493,79 @@ public:
 
     /** %Handle window enter event
       */
-    View &onWindowEntered(Function<void()> &&f) { me().onWindowEntered(move(f)); return *this; }
+    auto onWindowEntered(this auto &&self, Function<void()> &&f) -> decltype(auto) { self.View::me().onWindowEntered(move(f)); return self; }
 
     /** %Handle window leave event
       */
-    View &onWindowLeft(Function<void()> &&f) { me().onWindowLeft(move(f)); return *this; }
+    auto onWindowLeft(this auto &&self, Function<void()> &&f) -> decltype(auto) { self.View::me().onWindowLeft(move(f)); return self; }
 
     /** %Handle pointer pressed event
       */
-    View &onPointerPressed(Filter<PointerEvent> &&f) { me().onPointerPressed(move(f)); return *this; }
+    auto onPointerPressed(this auto &&self, Filter<PointerEvent> &&f) -> decltype(auto) { self.View::me().onPointerPressed(move(f)); return self; }
 
     /** %Handle pointer release event
       */
-    View &onPointerReleased(Filter<PointerEvent> &&f) { me().onPointerReleased(move(f)); return *this; }
+    auto onPointerReleased(this auto &&self, Filter<PointerEvent> &&f) -> decltype(auto) { self.View::me().onPointerReleased(move(f)); return self; }
 
     /** %Handle pointer moved event
       */
-    View &onPointerMoved(Filter<PointerEvent> &&f) { me().onPointerMoved(move(f)); return *this; }
+    auto onPointerMoved(this auto &&self, Filter<PointerEvent> &&f) -> decltype(auto) { self.View::me().onPointerMoved(move(f)); return self; }
 
     /** %Handle mouse pressed event
       */
-    View &onMousePressed(Filter<MouseEvent> &&f) { me().onMousePressed(move(f)); return *this; }
+    auto onMousePressed(this auto &&self, Filter<MouseEvent> &&f) -> decltype(auto) { self.View::me().onMousePressed(move(f)); return self; }
 
     /** %Handle mouse release event
       */
-    View &onMouseReleased(Filter<MouseEvent> &&f) { me().onMouseReleased(move(f)); return *this; }
+    auto onMouseReleased(this auto &&self, Filter<MouseEvent> &&f) -> decltype(auto) { self.View::me().onMouseReleased(move(f)); return self; }
 
     /** %Handle mouse moved event
       */
-    View &onMouseMoved(Filter<MouseEvent> &&f) { me().onMouseMoved(move(f)); return *this; }
+    auto onMouseMoved(this auto &&self, Filter<MouseEvent> &&f) -> decltype(auto) { self.View::me().onMouseMoved(move(f)); return self; }
 
     /** %Handle finger pressed event
       */
-    View &onFingerPressed(Filter<FingerEvent> &&f) { me().onFingerPressed(move(f)); return *this; }
+    auto onFingerPressed(this auto &&self, Filter<FingerEvent> &&f) -> decltype(auto) { self.View::me().onFingerPressed(move(f)); return self; }
 
     /** %Handle finger released event
       */
-    View &onFingerReleased(Filter<FingerEvent> &&f) { me().onFingerReleased(move(f)); return *this; }
+    auto onFingerReleased(this auto &&self, Filter<FingerEvent> &&f) -> decltype(auto) { self.View::me().onFingerReleased(move(f)); return self; }
 
     /** %Handle finger moved event
       */
-    View &onFingerMoved(Filter<FingerEvent> &&f) { me().onFingerMoved(move(f)); return *this; }
+    auto onFingerMoved(this auto &&self, Filter<FingerEvent> &&f) -> decltype(auto) { self.View::me().onFingerMoved(move(f)); return self; }
 
     /** %Handle pen touched/moved event
       */
-    View &onPenMoved(Filter<PenEvent> &&f) { me().onPenMoved(move(f)); return *this; }
+    auto onPenMoved(this auto &&self, Filter<PenEvent> &&f) -> decltype(auto) { self.View::me().onPenMoved(move(f)); return self; }
 
     /** %Handle pen hovered event
       */
-    View &onPenHovered(Filter<PenEvent> &&f) { me().onPenHovered(move(f)); return *this; }
+    auto onPenHovered(this auto &&self, Filter<PenEvent> &&f) -> decltype(auto) { self.View::me().onPenHovered(move(f)); return self; }
 
     /** %Handle pen button pressed event
       */
-    View &onPenPressed(Filter<PenEvent> &&f) { me().onPenPressed(move(f)); return *this; }
+    auto onPenPressed(this auto &&self, Filter<PenEvent> &&f) -> decltype(auto) { self.View::me().onPenPressed(move(f)); return self; }
 
     /** %Handle pen button released event
       */
-    View &onPenReleased(Filter<PenEvent> &&f) { me().onPenReleased(move(f)); return *this; }
+    auto onPenReleased(this auto &&self, Filter<PenEvent> &&f) -> decltype(auto) { self.View::me().onPenReleased(move(f)); return self; }
 
     /** %Handle mouse wheel moved event
       */
-    View &onWheelMoved(Filter<WheelEvent> &&f) { me().onWheelMoved(move(f)); return *this; }
+    auto onWheelMoved(this auto &&self, Filter<WheelEvent> &&f) -> decltype(auto) { self.View::me().onWheelMoved(move(f)); return self; }
 
     /** %Handle key pressed event
       */
-    View &onKeyPressed(Filter<KeyEvent> &&f) { me().onKeyPressed(move(f)); return *this; }
+    auto onKeyPressed(this auto &&self, Filter<KeyEvent> &&f) -> decltype(auto) { self.View::me().onKeyPressed(move(f)); return self; }
 
     /** %Handle key released event
       */
-    View &onKeyReleased(Filter<KeyEvent> &&f) { me().onKeyReleased(move(f)); return *this; }
+    auto onKeyReleased(this auto &&self, Filter<KeyEvent> &&f) -> decltype(auto) { self.View::me().onKeyReleased(move(f)); return self; }
 
     /** Get notified when the View's lifetime ends
       */
-    View &onEndOfLife(Function<void()> &&f) { return attach(OnEndOfLife{move(f)}); }
+    auto onEndOfLife(this auto &&self, Function<void()> &&f) -> decltype(auto) { return self.View::attach(OnEndOfLife{move(f)}); }
 
     ///@}
 
@@ -558,11 +575,11 @@ public:
 
     /** Attach a non-visual object (e.g. a Monitor)
       */
-    View &attach(const Object &other) { me().attach(other); return *this; }
+    auto attach(this auto &&self, const Object &other) -> decltype(auto) { self.View::me().attach(other); return self; }
 
     /** Convenience method for attaching a monitor
       */
-    View &attach(Function<void()> &&f) { me().attach(move(f)); return *this; }
+    auto attach(this auto &&self, Function<void()> &&f) -> decltype(auto) { self.View::me().attach(move(f)); return self; }
 
     ///@}
 
@@ -868,8 +885,10 @@ protected:
     template<class T>
     T &associate(Out<T> self)
     {
-        me();
-        self = weak<T>();
+        if (self.requested()) {
+            me();
+            self = weak<T>();
+        }
         return static_cast<T &>(*this);
     }
 

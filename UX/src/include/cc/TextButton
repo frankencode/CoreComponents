@@ -19,17 +19,21 @@ namespace cc {
 class TextButton final: public TouchButton
 {
 public:
-    /** Create a primordial text button
+    /** Create a text button
       */
-    TextButton();
+    explicit TextButton(Out<TextButton> self = None{});
 
-    /** Create a new text button
+    /** Create a text button
       */
-    explicit TextButton(const String &text, const Picture &icon = Picture{});
+    explicit TextButton(const String &text, Out<TextButton> self = None{});
 
-    /** Create a new text button
+    /** Create a text button
       */
-    explicit TextButton(const Picture &icon);
+    explicit TextButton(const Picture &icon, Out<TextButton> self = None{});
+
+    /** Create a text button
+      */
+    TextButton(const String &text, const Picture &icon , Out<TextButton> self = None{});
 
     /** Get a weak reference in \a self
       */

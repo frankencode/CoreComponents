@@ -51,13 +51,19 @@ struct AlertDialog::State final: public Dialog::State
     Text text_;
 };
 
-AlertDialog::AlertDialog():
+AlertDialog::AlertDialog(Out<AlertDialog> self):
     Dialog{onDemand<State>}
-{}
+{
+    View::associate<AlertDialog>(self);
+}
 
-AlertDialog::AlertDialog(const String &text):
+AlertDialog::AlertDialog(const String &text, Out<AlertDialog> self):
     Dialog{new State{text}}
-{}
+{
+    if (self.requested()) {
+        View::associate<AlertDialog>(self);
+    }
+}
 
 AlertDialog &AlertDialog::associate(Out<AlertDialog> self)
 {

@@ -18,9 +18,22 @@ namespace cc {
 class Grid final: public View
 {
 public:
-    /** Create a new grid
+    /** Create a grid
       */
-    Grid(): View{GridLayout{}} {}
+    explicit Grid(int columns = 2, Out<Grid> self = None{}):
+        View{GridLayout{}.columns(columns)}
+    {
+        View::associate<Grid>(self);
+    }
+
+    /** Create a grid of \a size
+      */
+    explicit Grid(const Size &size, int columns = 2, Out<Grid> self = None{}):
+        View{GridLayout{}.columns(columns)}
+    {
+        View::size(size);
+        View::associate<Grid>(self);
+    }
 
     int columns() const { return layout().columns(); } ///< Get number of layout columns
     Grid &columns(int newValue) { layout().columns(newValue); return *this; } ///< Set number of layout columns

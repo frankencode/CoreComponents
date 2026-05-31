@@ -22,13 +22,13 @@ enum class Icon: uint32_t;
 class LineEdit: public Control
 {
 public:
-    /** Create a primordial text input field
+    /** Create a text input field
       */
-    LineEdit();
+    explicit LineEdit(Out<LineEdit> self = None{});
 
-    /** Create a new text input field with given \a title
+    /** Create a text input field with given \a title
       */
-    explicit LineEdit(const String &title);
+    explicit LineEdit(const String &title, Out<LineEdit> self = None{});
 
     /** Get a weak reference in \a self
       */
@@ -74,7 +74,7 @@ protected:
       * \param input %Custom input control
       * \param title %Title of this text field
       */
-    explicit LineEdit(const TextInput &input, const String &title = String{});
+    explicit LineEdit(const TextInput &input, const String &title = String{}, Out<LineEdit> self = None{});
 
     /** Get the input control
       */

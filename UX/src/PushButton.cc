@@ -173,11 +173,6 @@ PushButton &PushButton::onTriggered(Function<void()> &&f)
     return *this;
 }
 
-PushButton &PushButton::operator()(Function<void()> &&f)
-{
-    return onTriggered(move(f));
-}
-
 PushButton::State &PushButton::me()
 {
     return get<State>();

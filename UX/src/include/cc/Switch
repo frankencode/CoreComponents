@@ -19,13 +19,13 @@ namespace cc {
 class Switch final: public Control
 {
 public:
-    /** Create primordial switch field
+    /** Create switch field
       */
-    Switch();
+    explicit Switch(Out<Switch> self = None{});
 
-    /** Create a new switch field
+    /** Create a switch field
       */
-    explicit Switch(const String &text);
+    explicit Switch(const String &text, Out<Switch> self = None{});
 
     /** Get a weak reference in \a self
       */

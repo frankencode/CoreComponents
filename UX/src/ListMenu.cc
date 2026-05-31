@@ -138,15 +138,22 @@ struct ListMenu::State final: public Flickable::State
     Property<double> tailSpace { sp(8) };
 };
 
-ListMenu::ListMenu():
+ListMenu::ListMenu(Out<ListMenu> self):
     Flickable{onDemand<State>}
-{}
+{
+    View::associate<ListMenu>(self);
+}
 
-ListMenu::ListMenu(double width, double height):
+ListMenu::ListMenu(const Size &size, Out<ListMenu> self):
     Flickable{new State}
 {
-    size({width, height});
+    View::size(size);
+    View::associate<ListMenu>(self);
 }
+
+ListMenu::ListMenu(double width, double height, Out<ListMenu> self):
+    ListMenu{Size{width, height}, self}
+{}
 
 ListMenu &ListMenu::associate(Out<ListMenu> self)
 {

@@ -18,13 +18,17 @@ struct TinyFloatingButton::State final: public PushButton::State
     {}
 };
 
-TinyFloatingButton::TinyFloatingButton():
+TinyFloatingButton::TinyFloatingButton(Out<TinyFloatingButton> self):
     PushButton{onDemand<State>}
-{}
+{
+    View::associate<TinyFloatingButton>(self);
+}
 
-TinyFloatingButton::TinyFloatingButton(const Picture &icon):
+TinyFloatingButton::TinyFloatingButton(const Picture &icon, Out<TinyFloatingButton> self):
     PushButton{new State{String{}, icon}}
-{}
+{
+    View::associate<TinyFloatingButton>(self);
+}
 
 TinyFloatingButton &TinyFloatingButton::associate(Out<TinyFloatingButton> self)
 {

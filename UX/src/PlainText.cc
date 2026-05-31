@@ -84,13 +84,23 @@ struct PlainText::State final: public View::State
     GetColor getPaper_;
 };
 
-PlainText::PlainText():
+PlainText::PlainText(Out<PlainText> self):
     View{onDemand<State>}
-{}
+{
+    View::associate<PlainText>(self);
+}
 
-PlainText::PlainText(const String &text, Font font):
+PlainText::PlainText(const String &text, Out<PlainText> self):
+    View{new State{text}}
+{
+    View::associate<PlainText>(self);
+}
+
+PlainText::PlainText(const String &text, Font font, Out<PlainText> self):
     View{new State{text, font}}
-{}
+{
+    View::associate<PlainText>(self);
+}
 
 PlainText &PlainText::associate(Out<PlainText> self)
 {

@@ -18,9 +18,28 @@ namespace cc {
 class Row final: public View
 {
 public:
-    /** Create a new row
+    /** Create a row
       */
-    Row(): View{RowLayout{}} {}
+    explicit Row(Out<Row> self = None{}):
+        View{RowLayout{}}
+    {
+        View::associate<Row>(self);
+    }
+
+    /** Create a row of \a size
+      */
+    explicit Row(const Size &size, Out<Row> self = None{}):
+        View{RowLayout{}}
+    {
+        View::associate<Row>(self);
+        View::size(size);
+    }
+
+    /** Create a row of size (\a width, \a height)
+      */
+    Row(double width, double height, Out<Row> self = None{}):
+        Row{Size{width, height}, self}
+    {}
 
     RowAlign align() const { return layout().align(); } ///< Get row alignment
     Row &align(RowAlign newValue) { layout().align(newValue); return *this; } ///< %Set row alignment

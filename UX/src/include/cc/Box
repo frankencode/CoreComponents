@@ -19,13 +19,19 @@ namespace cc {
 class Box final: public View
 {
 public:
-    /** Create a primordial box
+    /** Create a box
       */
-    Box();
+    explicit Box(Out<Box> self = None{});
 
-    /** Create a new box of size (\a width, \a height)
+    /** Create a box of \a size
       */
-    Box(double width, double height);
+    explicit Box(const Size &size, Out<Box> self = None{});
+
+    /** Create a box of size (\a width, \a height)
+      */
+    Box(double width, double height, Out<Box> self = None{}):
+        Box{Size{width, height}, self}
+    {}
 
     /** Get a weak reference in \a self
       */

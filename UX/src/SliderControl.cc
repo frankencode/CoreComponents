@@ -220,9 +220,11 @@ struct SliderControl::State: public InputControl::State
     double valueSaved_ { 0 };
 };
 
-SliderControl::SliderControl():
+SliderControl::SliderControl(Out<SliderControl> self):
     InputControl{onDemand<SliderControl::State>}
-{}
+{
+    View::associate<SliderControl>(self);
+}
 
 SliderControl &SliderControl::associate(Out<SliderControl> self)
 {

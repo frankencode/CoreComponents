@@ -54,9 +54,11 @@ Size CustomDialog::State::minSize() const
     return getSize();
 }
 
-CustomDialog::CustomDialog():
+CustomDialog::CustomDialog(Out<CustomDialog> self):
     Dialog{onDemand<State>}
-{}
+{
+    View::associate<CustomDialog>(self);
+}
 
 CustomDialog &CustomDialog::associate(Out<CustomDialog> self)
 {

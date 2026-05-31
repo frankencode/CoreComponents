@@ -20,13 +20,19 @@ namespace cc {
 class Plot final: public View
 {
 public:
-    /** Create a primordial plot
+    /** Create a plot
       */
-    Plot();
+    explicit Plot(Out<Plot> self = None{});
 
-    /** Create a new plot of size (\a width, \a height)
+    /** Create a plot of size
       */
-    Plot(double width, double height);
+    explicit Plot(const Size &size, Out<Plot> self = None{});
+
+    /** Create a plot of size (\a width, \a height)
+      */
+    Plot(double width, double height, Out<Plot> self = None{}):
+        Plot{Size{width, height}, self}
+    {}
 
     /** Get a weak reference in \a self
       */

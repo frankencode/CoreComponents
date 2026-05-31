@@ -10,15 +10,14 @@ int main() {
     Property<String> text;
 
     return
-        View{sp(640), sp(480)}
-        .associate(&view)
-        .add(
+        View{sp(640), sp(480), &view}
+        (
             FilledButton{"Click me!"}
             .associate(&button)
             .onClicked([=] mutable { text = "Hello, bindings!"; })
             .center([=]{ return view.size() / 2; })
         )
-        .add(
+        (
             Label{}
             .text([=]{ return text; })
             .centerLeft([=]{

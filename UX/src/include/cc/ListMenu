@@ -22,13 +22,17 @@ namespace cc {
 class ListMenu final: public Flickable
 {
 public:
-    /** Create a primodrial list menu
+    /** Create a list menu
       */
-    ListMenu();
+    explicit ListMenu(Out<ListMenu> self = None{});
 
-    /** Create a new list menu of given size (\a width, \a height)
+    /** Create a list menu of given \a size
       */
-    ListMenu(double width, double height);
+    explicit ListMenu(const Size &size, Out<ListMenu> self = None{});
+
+    /** Create a list menu of given size (\a width, \a height)
+      */
+    ListMenu(double width, double height, Out<ListMenu> self = None{});
 
     /** Get a weak reference in \a self
       */

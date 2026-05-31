@@ -19,13 +19,19 @@ namespace cc {
 class StackView: public View
 {
 public:
-    /** Create a primordial view stack
+    /** Create a view stack
       */
-    StackView();
+    explicit StackView(Out<StackView> self = None{});
 
-    /** Create a new view stack of given size
+    /** Create a view stack of given \a size
       */
-    StackView(double width, double height);
+    explicit StackView(const Size &size, Out<StackView> self = None{});
+
+    /** Create a view stack of given size (\a width, \a height)
+      */
+    StackView(double width, double height, Out<StackView> self = None{}):
+        StackView{Size{width, height}, self}
+    {}
 
     /** Get a weak reference in \a self
       */

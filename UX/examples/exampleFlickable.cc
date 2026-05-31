@@ -1,23 +1,16 @@
 #include <cc/Flickable>
 #include <cc/FlickableIndicator>
-#include <cc/ColumnLayout>
 #include <cc/Label>
+#include <cc/layout>
 
 int main()
 {
     using namespace cc;
 
-    const double gap = Font::defaultSize();
-
     return
         Flickable{
-            640, 480,
-            Pane{}
-            .layout(
-                ColumnLayout{}
-                .spacing(gap)
-                .margin(gap)
-            )
+            sp(640), sp(480),
+            Column{}
             .populate([](auto target) {
                 for (int i = 0; i < 100; ++i) {
                     target.add(Label{"Item " + str(i + 1)});

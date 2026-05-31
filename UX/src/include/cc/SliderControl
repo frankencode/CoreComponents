@@ -19,9 +19,9 @@ namespace cc {
 class SliderControl final: public InputControl
 {
 public:
-    /** Create a primordial slider
+    /** Create a slider
       */
-    SliderControl();
+    explicit SliderControl(Out<SliderControl> self = None{});
 
     /** Get a weak reference in \a self
       */

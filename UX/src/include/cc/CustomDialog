@@ -19,9 +19,9 @@ namespace cc {
 class CustomDialog: public Dialog
 {
 public:
-    /** Create a primordial custom dialog
+    /** Create a new custom dialog
       */
-    CustomDialog();
+    explicit CustomDialog(Out<CustomDialog> self = None{});
 
     /** Get a weak reference in \a self
       */

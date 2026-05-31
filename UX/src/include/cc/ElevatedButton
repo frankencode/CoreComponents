@@ -19,17 +19,21 @@ namespace cc {
 class ElevatedButton final: public PushButton
 {
 public:
-    /** Create a primordial elevated button
+    /** Create an elevated button
       */
-    ElevatedButton();
+    explicit ElevatedButton(Out<ElevatedButton> self = None{});
 
     /** Create an elevated button
       */
-    explicit ElevatedButton(const Picture &icon);
+    explicit ElevatedButton(const Picture &icon, Out<ElevatedButton> self = None{});
 
     /** Create an elevated button with a text label
       */
-    explicit ElevatedButton(const String &text, const Picture &icon = Picture{});
+    explicit ElevatedButton(const String &text, Out<ElevatedButton> self = None{});
+
+    /** Create an elevated button with a text label and icon
+      */
+    ElevatedButton(const String &text, const Picture &icon, Out<ElevatedButton> self = None{});
 
     /** Get a weak reference in \a self
       */

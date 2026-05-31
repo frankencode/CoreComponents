@@ -19,13 +19,13 @@ namespace cc {
 class TinyFloatingButton final: public PushButton
 {
 public:
-    /** Create a primordial tiny floating button
+    /** Create a tiny floating button
       */
-    TinyFloatingButton();
+    explicit TinyFloatingButton(Out<TinyFloatingButton> self = None{});
 
     /** Create a tiny floating button
       */
-    explicit TinyFloatingButton(const Picture &icon);
+    explicit TinyFloatingButton(const Picture &icon, Out<TinyFloatingButton> self = None{});
 
     /** Get a weak reference in \a self
       */

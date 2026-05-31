@@ -19,18 +19,36 @@ namespace cc {
 class Pane: public View
 {
 public:
-    /** Create a primordial pane
+    /** Create a pane
       */
-    Pane():
+    explicit Pane(Out<Pane> self = None{}):
         View{onDemand<State>}
-    {}
+    {
+        View::associate<Pane>(self);
+    }
 
-    /** Create a new pane of size (\a width, \a height)
+    /** Create a pane of \a size
       */
-    Pane(double width, double height):
+    explicit Pane(const Size &size, Out<Pane> self = None{}):
         View{new State}
     {
-        size({width, height});
+        View::size(size);
+        View::associate<Pane>(self);
+    }
+
+    /** Create a pane of size (\a width, \a height)
+      */
+    Pane(double width, double height, Out<Pane> self = None{}):
+        Pane{Size{width, height}, self}
+    {}
+
+    /** Create a pane organizing its children with \a layout
+      */
+    explicit Pane(const Layout &layout, Out<Pane> self = None{}):
+        View{new State}
+    {
+        View::layout(layout);
+        View::associate<Pane>(self);
     }
 
     /** Get a weak reference in \a self

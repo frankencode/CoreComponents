@@ -204,13 +204,17 @@ struct ScrollBar::State: public DragArea::State
     Timer hideLater_ { style().scrollBarAutoHideTimeout() };
 };
 
-ScrollBar::ScrollBar():
+ScrollBar::ScrollBar(Out<ScrollBar> self):
     DragArea{onDemand<State>}
-{}
+{
+    View::associate<ScrollBar>(self);
+}
 
-ScrollBar::ScrollBar(Orientation orientation):
+ScrollBar::ScrollBar(Orientation orientation, Out<ScrollBar> self):
     DragArea{new State{orientation}}
-{}
+{
+    View::associate<ScrollBar>(self);
+}
 
 ScrollBar &ScrollBar::associate(Out<ScrollBar> self)
 {

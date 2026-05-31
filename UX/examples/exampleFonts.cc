@@ -45,8 +45,7 @@ int main()
     View view;
 
     return
-        View{640, 480}
-        .associate(&view)
+        View{640, 480, &view}
         .paint([=]{
             Painter p{view};
             p.setPen(Color::Black);

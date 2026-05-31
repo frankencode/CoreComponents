@@ -22,17 +22,19 @@ namespace cc {
 class ListView: public Flickable
 {
 public:
-    /** Create a primordial list view
+    /** Create a list view
       */
-    ListView();
+    explicit ListView(Out<ListView> self = None{});
 
-    /** Create a new list view
+    /** Create a new list view of \a size
       */
-    explicit ListView(Out<ListView> self);
+    explicit ListView(const Size &size, Out<ListView> self = None{});
 
     /** Create a new list view of size (\a width, \a height)
       */
-    ListView(double width, double height);
+    ListView(double width, double height, Out<ListView> self = None{}):
+        ListView{Size{width, height}, self}
+    {}
 
     /** Get a weak reference in \a self
       */

@@ -22,13 +22,19 @@ namespace cc {
 class LogView final: public ListView
 {
 public:
-    /** Create a primordial text view
+    /** Create a log view
       */
-    LogView();
+    explicit LogView(Out<LogView> self = None{});
 
-    /** Create a new text view of size (\a width, \a height)
+    /** Create a log view of \a size
       */
-    LogView(double width, double height);
+    explicit LogView(const Size &size, Out<LogView> self = None{});
+
+    /** Create a log view of size (\a width, \a height)
+      */
+    LogView(double width, double height, Out<LogView> self = None{}):
+        LogView{Size{width, height}, self}
+    {}
 
     /** Get a weak reference in \a self
       */

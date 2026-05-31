@@ -37,8 +37,7 @@ int main()
     PlainText view;
 
     return
-        PlainText{text, Font{Pitch::Fixed, fontSize}}
-        .associate(&view)
+        PlainText{text, Font{Pitch::Fixed, fontSize}, &view}
         .size(sp(500))
         .paper(Color::White)
         .margin(margin)
