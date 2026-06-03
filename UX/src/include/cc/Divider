@@ -17,9 +17,9 @@ namespace cc {
 class Divider final: public View
 {
 public:
-    /** Create a primordial divider
+    /** Create a divider
       */
-    Divider();
+    explicit Divider(Out<Divider> self = None{});
 
     /** Get a weak reference in \a self
       */

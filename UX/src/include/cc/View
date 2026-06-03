@@ -665,14 +665,14 @@ protected:
           */
         Rect childrenRect() const;
 
-        /** \copydoc View::attach(const Object &)
+        /** Attach a non-visual object (e.g. a Monitor)
           */
         void attach(const Object &other)
         {
             attachments_.append(other);
         }
 
-        /** \copydoc View::attach(Function<void()> &&)
+        /** Convenience method for attaching a monitor
           */
         void attach(Function<void()> &&f)
         {
@@ -784,11 +784,11 @@ protected:
         void add(const View &child) { insertChild(child); } ///< \copydoc View::add()
         void addAbove(const View &child) { insertChild(child); } ///< \copydoc View::addAbove()
         void addBelow(const View &child); ///< \copydoc View::addBelow()
-        void insertAt(Locator target, View child); ///< \copydoc View::insertAt(Locator, const View &)
-        void insertAt(long index, const View &child); ///< \copydoc View::insertAt(long, const View &)
+        void insertAt(Locator target, View child); ///< Insert new \a child at \a target
+        void insertAt(long index, const View &child);  ///< Insert new \a child at \a index
         void remove(const View &child) { removeChild(child); } ///< \copydoc View::remove()
 
-        void box(const View &child); ///< \copydoc View::box()
+        void box(const View &child); ///< add single child and bind this view's size to it
 
         virtual void insertChild(View child); ///< Handles the insertion of new children
         virtual void removeChild(View child); ///< Handles the removal of children

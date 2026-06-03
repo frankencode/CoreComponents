@@ -21,19 +21,25 @@ namespace cc {
   * A Text shows descriptive texts, which might be wrapped into multiple lines.
   * When maxWidth() is set the text will be automatically wrapped if necessary.
   * The text() property supports basic HTML tags (&lt;b&gt;, &lt;i&gt;, &lt;u&gt; and &lt;strike&gt;).
+  *
+  * \todo harmonize constructors
   */
 class Text: public View
 {
 public:
-    /** Create a primordial text display
+    /** Create a text display
       */
-    Text();
+    explicit Text(Out<Text> self = None{});
 
-    /** Create a new text display
-      * \param text Initial text
-      * \param font Initial font
+    /** Create a text display
       */
-    explicit Text(const String &text, Font font = Font{});
+    Text(const String &text, Font font, Out<Text> self = None{});
+
+    /** Create a text display
+      */
+    explicit Text(const String &text, Out<Text> self = None{}):
+        Text{text, Font{}, self}
+    {}
 
     /** Get a weak reference in \a self
       */

@@ -41,9 +41,9 @@ int main()
                     for (int i = 0; i < 32; ++i) {
                         target.carrier().add(
                             ListItem{}
-                            .icon(Picture{Icon::AccessPoint, 28})
+                            .icon(Picture{Icon::AccessPoint, sp(28)})
                             .title(Format{"User %%"}.arg(i))
-                            .onClicked([=]() mutable {
+                            .onClicked([=] mutable {
                                 CC_INSPECT(i);
                                 stack.push(
                                     View{}

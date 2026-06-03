@@ -44,9 +44,11 @@ Size Divider::State::maxSize() const
     return Size{std::numeric_limits<double>::max(), h};
 }
 
-Divider::Divider():
+Divider::Divider(Out<Divider> self):
     View{onDemand<State>}
-{}
+{
+    View::associate<Divider>(self);
+}
 
 Divider &Divider::associate(Out<Divider> self)
 {

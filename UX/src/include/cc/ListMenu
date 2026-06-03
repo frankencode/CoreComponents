@@ -46,6 +46,12 @@ public:
         return *this;
     }
 
+    ListMenu &operator()(const View &child)
+    {
+        carrier().add(child);
+        return *this;
+    }
+
     View header() const; ///< Get the header
     ListMenu &header(const View &newValue); ///< %Set the header
 

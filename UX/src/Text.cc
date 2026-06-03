@@ -10,13 +10,17 @@
 
 namespace cc {
 
-Text::Text():
+Text::Text(Out<Text> self):
     View{onDemand<State>}
-{}
+{
+    View::associate<Text>(self);
+}
 
-Text::Text(const String &text, Font font):
+Text::Text(const String &text, Font font, Out<Text> self):
     View{new State{text, font}}
-{}
+{
+    View::associate<Text>(self);
+}
 
 Text::Text(const String &text, Font font, bool html):
     View{new State{text, font, html}}

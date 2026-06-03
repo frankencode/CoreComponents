@@ -16,17 +16,18 @@ namespace cc {
   * \ingroup ui
   * \brief Positional indicator for a flickable pane
   * \see FlickableIndicator
+  * \todo harmonize constructors
   */
 class FlickableIndicator final: public View
 {
 public:
-    /** Create a primordial scroll indicator
+    /** Create a flickable indicator
       */
-    FlickableIndicator();
+    explicit FlickableIndicator(Out<FlickableIndicator> self = None{});
 
-    /** Create a new scroll indicator of given \a orientation
+    /** Create a new public: indicator of given \a orientation
       */
-    explicit FlickableIndicator(Orientation orientation);
+    explicit FlickableIndicator(Orientation orientation, Out<FlickableIndicator> self = None{});
 
     /** Get a weak reference in \a self
       */

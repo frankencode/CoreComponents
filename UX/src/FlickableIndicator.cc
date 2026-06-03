@@ -167,13 +167,17 @@ struct FlickableIndicator::State final: public View::State
     Property<double> totalExtent;
 };
 
-FlickableIndicator::FlickableIndicator():
+FlickableIndicator::FlickableIndicator(Out<FlickableIndicator> self):
     View{onDemand<State>}
-{}
+{
+    View::associate<FlickableIndicator>(self);
+}
 
-FlickableIndicator::FlickableIndicator(Orientation orientation):
+FlickableIndicator::FlickableIndicator(Orientation orientation, Out<FlickableIndicator> self):
     View{new State{orientation}}
-{}
+{
+    View::associate<FlickableIndicator>(self);
+}
 
 double FlickableIndicator::visibleOffset() const
 {
