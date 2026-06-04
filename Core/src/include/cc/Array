@@ -17,6 +17,7 @@
 #include <sys/mman.h> // munmap
 #include <type_traits>
 #include <cstring>
+#include <limits>
 
 namespace cc {
 
@@ -144,7 +145,9 @@ public:
             /*.items = */ nullptr
         }
     {
-        if (0 < items.size()) me().items = new T[items.size()];
+        if (0 < items.size() && items.size() < std::numeric_limits<std::size_t>::max()) {
+            me().items = new T[items.size()];
+        }
         Item * const dst = me().items;
         long i = 0;
         for (const auto &x: items) dst[i++] = x;
