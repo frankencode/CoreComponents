@@ -5,35 +5,35 @@ cat $SOURCE/Core/src/TapBuffer.cc $SOURCE/Core/src/Base64.cc $SOURCE/Core/src/Ya
 cat $SOURCE/Build/src/PreparationStage.cc $SOURCE/Build/src/CodyMessage.cc $SOURCE/Build/src/CodyWorker.cc $SOURCE/Build/src/ConfigureShell.cc $SOURCE/Build/src/InstallStage.cc $SOURCE/Build/src/CodyBlockSource.cc $SOURCE/Build/src/BuildParameters.cc $SOURCE/Build/src/JobServer.cc $SOURCE/Build/src/JobScheduler.cc $SOURCE/Build/src/CodyTransport.cc $SOURCE/Build/src/BuildPlan.cc $SOURCE/Build/src/InsightDatabase.cc $SOURCE/Build/src/LinkJob.cc $SOURCE/Build/src/BuildMap.cc $SOURCE/Build/src/BuildStage.cc $SOURCE/Build/src/BuildStageGuard.cc $SOURCE/Build/src/Job.cc $SOURCE/Build/src/ImportManager.cc $SOURCE/Build/src/CodyServer.cc $SOURCE/Build/src/GnuToolChain.cc $SOURCE/Build/src/CodyMessageSyntax.cc $SOURCE/Build/src/TestRunStage.cc $SOURCE/Build/src/ConfigureStage.cc $SOURCE/Build/src/SystemPrerequisite.cc $SOURCE/Build/src/RecipeProtocol.cc $SOURCE/Build/src/GlobbingStage.cc $SOURCE/Build/src/CompileLinkStage.cc $SOURCE/Build/src/BuildShell.cc $SOURCE/Build/src/UninstallStage.cc > $SOURCE/Build/src/.lump.cc
 cat $SOURCE/Syntax/src/SyntaxRule.cc $SOURCE/Syntax/src/YasonSyntax.cc $SOURCE/Syntax/src/Token.cc $SOURCE/Syntax/src/UriSyntax.cc $SOURCE/Syntax/src/FloatSyntax.cc $SOURCE/Syntax/src/InetAddressSyntax.cc $SOURCE/Syntax/src/yason.cc $SOURCE/Syntax/src/json.cc $SOURCE/Syntax/src/Glob.cc $SOURCE/Syntax/src/IntegerSyntax.cc $SOURCE/Syntax/src/Uri.cc $SOURCE/Syntax/src/PatternSyntax.cc $SOURCE/Syntax/src/Pattern.cc $SOURCE/Syntax/src/csv/CsvSyntax.cc $SOURCE/Syntax/src/csv/CsvSource.cc $SOURCE/Syntax/src/csv/CsvFormat.cc $SOURCE/Syntax/src/syntax_nodes/LookAheadNode.cc $SOURCE/Syntax/src/syntax_nodes/KeywordNode.cc $SOURCE/Syntax/src/syntax_nodes/ExpectNode.cc $SOURCE/Syntax/src/syntax_nodes/ChoiceNode.cc $SOURCE/Syntax/src/syntax_nodes/MatchNode.cc $SOURCE/Syntax/src/syntax_nodes/ReplayNode.cc $SOURCE/Syntax/src/syntax_nodes/LongestChoiceNode.cc $SOURCE/Syntax/src/syntax_nodes/BoiNode.cc $SOURCE/Syntax/src/syntax_nodes/PassNode.cc $SOURCE/Syntax/src/syntax_nodes/FailNode.cc $SOURCE/Syntax/src/syntax_nodes/RangeMinMaxNode.cc $SOURCE/Syntax/src/syntax_nodes/CharCompareNode.cc $SOURCE/Syntax/src/syntax_nodes/RefNode.cc $SOURCE/Syntax/src/syntax_nodes/FindLastNode.cc $SOURCE/Syntax/src/syntax_nodes/AnyNode.cc $SOURCE/Syntax/src/syntax_nodes/InlineNode.cc $SOURCE/Syntax/src/syntax_nodes/RepeatNode.cc $SOURCE/Syntax/src/syntax_nodes/ContextNode.cc $SOURCE/Syntax/src/syntax_nodes/CaptureNode.cc $SOURCE/Syntax/src/syntax_nodes/FindNode.cc $SOURCE/Syntax/src/syntax_nodes/DebugNode.cc $SOURCE/Syntax/src/syntax_nodes/StringNode.cc $SOURCE/Syntax/src/syntax_nodes/SyntaxNode.cc $SOURCE/Syntax/src/syntax_nodes/SequenceNode.cc $SOURCE/Syntax/src/syntax_nodes/EoiNode.cc $SOURCE/Syntax/src/syntax_nodes/LengthNode.cc $SOURCE/Syntax/src/syntax_nodes/RangeExplicitNode.cc > $SOURCE/Syntax/src/.lump.cc
 mkdir -p .objects-5CF18B7A-$MACHINE-Core_src
-g++ -c -o .objects-5CF18B7A-$MACHINE-Core_src/.lump.o -MMD -DNDEBUG -O1 -flto -fno-plt -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fdiagnostics-color=always -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=3.3.0 -D_GNU_SOURCE -Wno-psabi -fmodules-ts -std=c++23 -I$SOURCE/Core/src/include $SOURCE/Core/src/.lump.cc &
+g++ -c -o .objects-5CF18B7A-$MACHINE-Core_src/.lump.o -MMD -DNDEBUG -O1 -flto -fno-plt -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fdiagnostics-color=always -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=4.0.0 -D_GNU_SOURCE -Wno-psabi -std=c++23 -I$SOURCE/Core/src/include $SOURCE/Core/src/.lump.cc &
 wait
-g++ -o libCoreComponentsCore.so.3.3.0 -shared -pthread -Wl,-soname,libCoreComponentsCore.so.3 .objects-5CF18B7A-$MACHINE-Core_src/.lump.o -fPIC -flto=32 -O1 -L. -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
-rm -f libCoreComponentsCore.so.3.3
-rm -f libCoreComponentsCore.so.3
+g++ -o libCoreComponentsCore.so.4.0.0 -shared -pthread -Wl,-soname,libCoreComponentsCore.so.4 .objects-5CF18B7A-$MACHINE-Core_src/.lump.o -fPIC -flto=32 -O1 -L. -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
+rm -f libCoreComponentsCore.so.4.0
+rm -f libCoreComponentsCore.so.4
 rm -f libCoreComponentsCore.so
-ln -sf libCoreComponentsCore.so.3.3.0 libCoreComponentsCore.so.3.3
-ln -sf libCoreComponentsCore.so.3.3.0 libCoreComponentsCore.so.3
-ln -sf libCoreComponentsCore.so.3.3.0 libCoreComponentsCore.so
+ln -sf libCoreComponentsCore.so.4.0.0 libCoreComponentsCore.so.4.0
+ln -sf libCoreComponentsCore.so.4.0.0 libCoreComponentsCore.so.4
+ln -sf libCoreComponentsCore.so.4.0.0 libCoreComponentsCore.so
 mkdir -p .objects-13029BBC-$MACHINE-Syntax_src
-g++ -c -o .objects-13029BBC-$MACHINE-Syntax_src/.lump.o -MMD -DNDEBUG -O1 -flto -fno-plt -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fdiagnostics-color=always -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=3.3.0 -std=c++23 -Wno-psabi -fmodules-ts -D_GNU_SOURCE -I$SOURCE/Syntax/src/include -I$SOURCE/Core/src/include $SOURCE/Syntax/src/.lump.cc &
+g++ -c -o .objects-13029BBC-$MACHINE-Syntax_src/.lump.o -MMD -DNDEBUG -O1 -flto -fno-plt -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fdiagnostics-color=always -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=4.0.0 -std=c++23 -Wno-psabi -D_GNU_SOURCE -I$SOURCE/Syntax/src/include -I$SOURCE/Core/src/include $SOURCE/Syntax/src/.lump.cc &
 wait
-g++ -o libCoreComponentsSyntax.so.3.3.0 -shared -pthread -Wl,-soname,libCoreComponentsSyntax.so.3 .objects-13029BBC-$MACHINE-Syntax_src/.lump.o -fPIC -flto=32 -O1 -L. -lCoreComponentsCore -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
-rm -f libCoreComponentsSyntax.so.3.3
-rm -f libCoreComponentsSyntax.so.3
+g++ -o libCoreComponentsSyntax.so.4.0.0 -shared -pthread -Wl,-soname,libCoreComponentsSyntax.so.4 .objects-13029BBC-$MACHINE-Syntax_src/.lump.o -fPIC -flto=32 -O1 -L. -lCoreComponentsCore -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
+rm -f libCoreComponentsSyntax.so.4.0
+rm -f libCoreComponentsSyntax.so.4
 rm -f libCoreComponentsSyntax.so
-ln -sf libCoreComponentsSyntax.so.3.3.0 libCoreComponentsSyntax.so.3.3
-ln -sf libCoreComponentsSyntax.so.3.3.0 libCoreComponentsSyntax.so.3
-ln -sf libCoreComponentsSyntax.so.3.3.0 libCoreComponentsSyntax.so
+ln -sf libCoreComponentsSyntax.so.4.0.0 libCoreComponentsSyntax.so.4.0
+ln -sf libCoreComponentsSyntax.so.4.0.0 libCoreComponentsSyntax.so.4
+ln -sf libCoreComponentsSyntax.so.4.0.0 libCoreComponentsSyntax.so
 mkdir -p .objects-20026972-$MACHINE-Build_src
-g++ -c -o .objects-20026972-$MACHINE-Build_src/.lump.o -MMD -DNDEBUG -O1 -flto -fno-plt -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fdiagnostics-color=always -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=3.3.0 -std=c++23 -Wno-psabi -fmodules-ts -D_GNU_SOURCE -I$SOURCE/Build/src/include -I$SOURCE/Core/src/include -I$SOURCE/Syntax/src/include $SOURCE/Build/src/.lump.cc &
+g++ -c -o .objects-20026972-$MACHINE-Build_src/.lump.o -MMD -DNDEBUG -O1 -flto -fno-plt -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fdiagnostics-color=always -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=4.0.0 -std=c++23 -Wno-psabi -D_GNU_SOURCE -I$SOURCE/Build/src/include -I$SOURCE/Core/src/include -I$SOURCE/Syntax/src/include $SOURCE/Build/src/.lump.cc &
 wait
-g++ -o libCoreComponentsBuild.so.3.3.0 -shared -pthread -Wl,-soname,libCoreComponentsBuild.so.3 .objects-20026972-$MACHINE-Build_src/.lump.o -fPIC -flto=32 -O1 -L. -lCoreComponentsCore -lCoreComponentsSyntax -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
-rm -f libCoreComponentsBuild.so.3.3
-rm -f libCoreComponentsBuild.so.3
+g++ -o libCoreComponentsBuild.so.4.0.0 -shared -pthread -Wl,-soname,libCoreComponentsBuild.so.4 .objects-20026972-$MACHINE-Build_src/.lump.o -fPIC -flto=32 -O1 -L. -lCoreComponentsCore -lCoreComponentsSyntax -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN'
+rm -f libCoreComponentsBuild.so.4.0
+rm -f libCoreComponentsBuild.so.4
 rm -f libCoreComponentsBuild.so
-ln -sf libCoreComponentsBuild.so.3.3.0 libCoreComponentsBuild.so.3.3
-ln -sf libCoreComponentsBuild.so.3.3.0 libCoreComponentsBuild.so.3
-ln -sf libCoreComponentsBuild.so.3.3.0 libCoreComponentsBuild.so
+ln -sf libCoreComponentsBuild.so.4.0.0 libCoreComponentsBuild.so.4.0
+ln -sf libCoreComponentsBuild.so.4.0.0 libCoreComponentsBuild.so.4
+ln -sf libCoreComponentsBuild.so.4.0.0 libCoreComponentsBuild.so
 mkdir -p .objects-306A4C91-$MACHINE-Build_tools
-g++ -o ccbuild -MMD -DNDEBUG -O1 -flto -fno-plt -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fdiagnostics-color=always -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=3.3.0 -std=c++23 -Wno-psabi -fmodules-ts -D_GNU_SOURCE -I$SOURCE/Core/src/include -I$SOURCE/Build/src/include -pthread $SOURCE/Build/tools/ccbuild.cc -fPIC -pie -flto=32 -O1 -L. -lCoreComponentsCore -lCoreComponentsBuild -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN' &
+g++ -o ccbuild -MMD -DNDEBUG -O1 -flto -fno-plt -fPIC -Wall -pthread -pipe -D_FILE_OFFSET_BITS=64 -fdiagnostics-color=always -fvisibility-inlines-hidden -DCCBUILD_BUNDLE_VERSION=4.0.0 -std=c++23 -Wno-psabi -D_GNU_SOURCE -I$SOURCE/Core/src/include -I$SOURCE/Build/src/include -pthread $SOURCE/Build/tools/ccbuild.cc -fPIC -pie -flto=32 -O1 -L. -lCoreComponentsCore -lCoreComponentsBuild -Wl,--enable-new-dtags,-rpath='$ORIGIN',-rpath='$ORIGIN'/../lib,-rpath-link='$ORIGIN' &
 wait
