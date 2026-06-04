@@ -3,6 +3,7 @@ Download
 
 Sourcecode | Hashsums
 :----------|:----------
+[CoreComponents-4.0.0.tar.gz](https://www.corecomponents.io/download/CoreComponents-4.0.0.tar.gz) | [CoreComponents-4.0.0.hash](https://www.corecomponents.io/download/CoreComponents-4.0.0.hash)
 [CoreComponents-3.0.0.tar.gz](https://www.corecomponents.io/download/CoreComponents-3.0.0.tar.gz) | [CoreComponents-3.0.0.hash](https://www.corecomponents.io/download/CoreComponents-3.0.0.hash)
 [CoreComponents-2.4.1.tar.gz](https://www.corecomponents.io/download/CoreComponents-2.4.1.tar.gz) | [CoreComponents-2.4.1.hash](https://www.corecomponents.io/download/CoreComponents-2.4.1.hash)
 [CoreComponents-2.4.0.tar.gz](https://www.corecomponents.io/download/CoreComponents-2.4.0.tar.gz) | [CoreComponents-2.4.0.hash](https://www.corecomponents.io/download/CoreComponents-2.4.0.hash)
