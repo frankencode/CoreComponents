@@ -45,11 +45,11 @@ public:
 
     /** Check if this is a non-null object
       */
-    explicit operator bool() const { return useCount(); }
+    explicit operator bool() const { return me.useCount(); }
 
     /** Check if this is a null object
       */
-    bool isNull() const { return !useCount(); }
+    bool isNull() const { return !me.useCount(); }
 
     /** Reference count
       */

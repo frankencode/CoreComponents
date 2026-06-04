@@ -167,7 +167,7 @@ public:
       */
     int useCount() const
     {
-        return state_ ? state_->useCount() : 0;
+        return state_ ? state()->useCount() : 0;
     }
 
     /** Equality operator
