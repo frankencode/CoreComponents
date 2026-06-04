@@ -54,6 +54,11 @@ struct MaterialistPlugin::State: public StylePlugin::State
                 if (Dir::exists(path)) {
                     FontManager{}.addPath(path);
                     defaultFont_ = Font{"Noto Sans", sp(16)};
+                    if (defaultFont_.path().contains("Mono")) {
+                        defaultFont_ = Font{};
+                        defaultFixedFont_ = Font{};
+                        continue;
+                    }
                     if (!defaultFixedFont_) defaultFixedFont_ = Font{"Noto Mono", sp(16)};
                     break;
                 }
