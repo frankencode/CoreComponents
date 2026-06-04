@@ -5,11 +5,11 @@ Library {
         compile-flags: [ -std=c++23, -Wno-psabi ] // -Wall, -Wextra, -pedantic
         cascade: true
     }
-    Dependency {
-        probe: probe/gcc15.cc
-        compile-flags: [ -fmodules-ts ]
-        cascade: true
-    }
+    // Dependency {
+    //     probe: probe/gcc15.cc
+    //     compile-flags: [ -fmodules-ts ]
+    //     cascade: true
+    // }
     Dependency {
         probe: probe/valgrind.cc
         compile-flags: -DCC_VALGRIND
