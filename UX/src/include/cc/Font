@@ -17,6 +17,7 @@ namespace cc {
 /** \class Font cc/Font
   * \ingroup ui
   * \brief %Font selector
+  * \todo rename color() to ink()
   */
 class Font
 {
@@ -105,8 +106,8 @@ public:
     MetricsHinting metricsHinting() const { return static_cast<MetricsHinting>(me().metricsHinting_); } ///< Get metrics hinting
     Font &metricsHinting(MetricsHinting newValue) { me().metricsHinting_ = static_cast<uint8_t>(newValue); return *this; } ///< %Set metrics hinting
 
-    Color color() const { return me().ink_; } ///< Get foreground color
-    Font &color(Color newValue) { me().ink_ = newValue; return *this; } ///< %Set foreground color
+    Color ink() const { return me().ink_; } ///< Get foreground color
+    Font &ink(Color newValue) { me().ink_ = newValue; return *this; } ///< %Set foreground color
 
     Color paper() const { return me().paper_; } ///< Get background color
     Font &paper(Color newValue) { me().paper_ = newValue; return *this; } ///< %Set background color
@@ -138,15 +139,8 @@ public:
             smoothing()      == b.smoothing()      &&
             outlineHinting() == b.outlineHinting() &&
             metricsHinting() == b.metricsHinting() &&
-            color()          == b.color()          &&
+            ink()            == b.ink()            &&
             paper()          == b.paper();
-    }
-
-    /** Not equal to operator
-      */
-    bool operator!=(const Font &b) const
-    {
-        return !(*this == b);
     }
 
 private:

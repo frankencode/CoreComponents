@@ -41,7 +41,7 @@ String str(const Font &font)
         << "  smoothing: " << font.smoothing() << nl
         << "  outlineHinting: " << font.outlineHinting() << nl
         << "  metricsHinting: " << font.metricsHinting() << nl
-        << "  color: " << font.color() << nl
+        << "  ink: " << font.ink() << nl
         << "  paper: " << font.paper() << nl
         << "}";
 }

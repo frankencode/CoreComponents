@@ -111,6 +111,10 @@ public:
     /** Show glyph run
       * \param pos %Baseline position
       * \param run %Glyph run
+      *
+      * The glyphs are by default rendered with the current pen color.
+      * The foreground and backgrond color can be overwritten by the \a run's font.
+      * \see Font::ink(), Font::paper()
       */
     Painter &showGlyphRun(Point pos, const GlyphRun &run);
 
@@ -119,8 +123,18 @@ public:
       * \param run %Glyph run
       * \param ink %Foreground colors
       * \param paper %Background colors
+      * \param offset Byte offset to apply when reading the \a ink and \a paper vectors
       */
-    Painter &showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper = GetColor{});
+    Painter &showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper = {}, int offset = 0);
+
+    /** Show glyph run with additional colors
+      * \param pos %Baseline position
+      * \param run %Glyph run
+      * \param ink %Foreground colors
+      * \param paper %Background colors
+      * \param offset Byte offset to apply when reading the \a ink and \a paper vectors
+      */
+    Painter &showGlyphRun(Point pos, const GlyphRun &run, const Array<Color> &ink, const Array<Color> &paper = {}, int offset = 0);
 
     /** Show text run
       * \param pos %Baseline position
@@ -133,8 +147,18 @@ public:
       * \param run %Text run
       * \param ink %Foreground colors
       * \param paper %Background colors
+      * \param offset Byte offset to apply when reading the \a ink and \a paper vectors
       */
-    Painter &showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper);
+    Painter &showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper = {}, int offset = 0);
+
+    /** Show text run with additional colors
+      * \param pos %Baseline position
+      * \param run %Text run
+      * \param ink %Foreground colors
+      * \param paper %Background colors
+      * \param offset Byte offset to apply when reading the \a ink and \a paper vectors
+      */
+    Painter &showTextRun(Point pos, const TextRun &run, const Array<Color> &ink, const Array<Color> &paper = {}, int offset = 0);
 
     ///@}
 
@@ -184,6 +208,9 @@ public:
 
 private:
     Painter(const Painter &) = delete;
+
+    template<typename T>
+    Painter &showGlyphRun(Point pos, const GlyphRun &run, T ink, T paper, int offset);
 
     void fillGlyphRunBackground(const FtGlyphRun &ftGlyphRun);
 

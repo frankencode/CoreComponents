@@ -43,8 +43,8 @@ struct Label::State: public View::State
 
         size([this]{ return preferredSize(); });
 
-        if (font().color())
-            color(font().color());
+        if (font().ink())
+            color(font().ink());
         else
             color([this]{ return theme().primaryTextColor(); });
 

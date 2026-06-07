@@ -220,9 +220,9 @@ Painter &Painter::showGlyphRun(Point pos, const GlyphRun &glyphRun)
         cairo_set_source(cr_, sourceSaved);
     }
 
-    if (glyphRun.font().color().isValid()) {
+    if (glyphRun.font().ink().isValid()) {
         if (!sourceSaved) sourceSaved = cairo_pattern_reference(cairo_get_source(cr_));
-        setPen(glyphRun.font().color());
+        setPen(glyphRun.font().ink());
     }
 
     Decoration decoration = ftGlyphRun.font().decoration();
@@ -307,7 +307,8 @@ Painter &Painter::showGlyphRun(Point pos, const GlyphRun &glyphRun)
     return *this;
 }
 
-Painter &Painter::showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper)
+template<typename T>
+Painter &cc::Painter::showGlyphRun(Point pos, const GlyphRun &run, T ink, T paper, int offset)
 {
     auto ftGlyphRun = run.as<FtGlyphRun>();
     auto ftScaledFont = run.scaledFont().as<FtScaledFont>();
@@ -345,7 +346,7 @@ Painter &Painter::showGlyphRun(Point pos, const GlyphRun &run, const GetColor &i
             Color bgColor;
             const cairo_glyph_t *glyph = nullptr;
 
-            bgColor = paper(byteOffset);
+            bgColor = paper(byteOffset + offset);
             if (glyphOffset < ftGlyphRun.cairoGlyphs().count()) glyph = &ftGlyphRun.cairoGlyphs()[glyphOffset];
 
             if (bgColor != bgColor0 || !glyph || glyph->y != glyph0->y)
@@ -393,12 +394,12 @@ Painter &Painter::showGlyphRun(Point pos, const GlyphRun &run, const GetColor &i
             glyphOffset += cluster->num_glyphs;
             ++clusterIndex;
 
-            Color fgColor = ink(byteOffset);
+            Color fgColor = ink(byteOffset + offset);
 
             if (fgColor0 != fgColor || clusterIndex == clusterCount)
             {
                 if (fgColor0) setPen(fgColor0);
-                else if (ftGlyphRun.font().color()) setPen(ftGlyphRun.font().color());
+                else if (ftGlyphRun.font().ink()) setPen(ftGlyphRun.font().ink());
                 else cairo_set_source(cr_, sourceSaved);
 
                 cairo_show_text_glyphs(
@@ -442,6 +443,16 @@ Painter &Painter::showGlyphRun(Point pos, const GlyphRun &run, const GetColor &i
     return *this;
 }
 
+Painter &Painter::showGlyphRun(Point pos, const GlyphRun &run, const GetColor &ink, const GetColor &paper, int offset)
+{
+    return showGlyphRun<const GetColor &>(pos, run, ink, paper, offset);
+}
+
+Painter &Painter::showGlyphRun(Point pos, const GlyphRun &run, const Array<Color> &ink, const Array<Color> &paper, int offset)
+{
+    return showGlyphRun<const Array<Color> &>(pos, run, ink, paper, offset);
+}
+
 Painter &Painter::showTextRun(Point pos, const TextRun &run)
 {
     for (const GlyphRun &glyphRun: run.as<FtTextRun>().glyphRuns()) {
@@ -450,17 +461,22 @@ Painter &Painter::showTextRun(Point pos, const TextRun &run)
     return *this;
 }
 
-Painter &Painter::showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper)
+Painter &Painter::showTextRun(Point pos, const TextRun &run, const GetColor &ink, const GetColor &paper, int offset)
 {
     FtTextRun ftTextRun = run.as<FtTextRun>();
-    int i0 = 0;
-    GetColor ink_;
-    GetColor paper_;
-    if (ink) ink_ = [&](int i) { return ink(i + i0); };
-    if (paper) paper_ = [&](int i) { return paper(i + i0); };
     for (const GlyphRun &glyphRun: ftTextRun.glyphRuns()) {
-        showGlyphRun(pos, glyphRun, ink_, paper_);
-        i0 += glyphRun.text().count();
+        showGlyphRun(pos, glyphRun, ink, paper, offset);
+        offset += glyphRun.text().count();
+    }
+    return *this;
+}
+
+Painter &Painter::showTextRun(Point pos, const TextRun &run, const Array<Color> &ink, const Array<Color> &paper, int offset)
+{
+    FtTextRun ftTextRun = run.as<FtTextRun>();
+    for (const GlyphRun &glyphRun: ftTextRun.glyphRuns()) {
+        showGlyphRun(pos, glyphRun, ink, paper, offset);
+        offset += glyphRun.text().count();
     }
     return *this;
 }
