@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 
     return
         TextView{sp(500), sp(500)}
+        // .font(Font{"DejaVu Sans Mono", sp(18)})
         .text(text)
         .run();
 }

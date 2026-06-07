@@ -240,7 +240,7 @@ void View::State::settled()
 void View::State::addBelow(const View &child)
 {
     View{child}.me().id_ = nextBelowId();
-    insertChild(child);
+    insertChild(child, children_.count());
 }
 
 void View::State::insertAt(Locator target, View child)
@@ -257,23 +257,23 @@ void View::State::insertAt(Locator target, View child)
             --newId;
         child.me().id_ = newId;
     }
-    insertChild(child);
+    insertChild(child, target ? target.index() : children_.count());
 }
 
 void View::State::insertAt(long index, const View &child)
 {
-    if (children_.count() == 0) insertChild(child);
+    if (children_.count() == 0) insertChild(child, 0);
     else insertAt(children_.from(index), child);
 }
 
 void View::State::box(const View &child)
 {
     while (children_.count() > 0) removeChild(children_.last());
-    insertChild(child);
+    insertChild(child, 0);
     size([this]{ return children_.first().size(); });
 }
 
-void View::State::insertChild(View child)
+void View::State::insertChild(View child, long index)
 {
     child.me().parent_ = this;
     if (std::isnan(child.me().id_)) {

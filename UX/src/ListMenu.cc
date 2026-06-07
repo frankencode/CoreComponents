@@ -78,10 +78,10 @@ class ListMenu::Pane final: public View
 
         bool isPainted() const override { return false; }
 
-        void insertChild(View child) override
+        void insertChild(View child, long index) override
         {
             child.visible(false);
-            View::State::insertChild(child);
+            View::State::insertChild(child, index);
         }
 
         Property<void> itemVisibility;
@@ -118,7 +118,7 @@ struct ListMenu::State final: public Flickable::State
     {
         if (header()) remove(header());
         header(newValue);
-        View::State::insertChild(header());
+        View::State::insertChild(header(), 0);
         header().pos([this]{ return carrier().pos(); });
         header().visible([this]{ return header().height() >= -carrier().pos()[1]; });
     }
@@ -127,7 +127,7 @@ struct ListMenu::State final: public Flickable::State
     {
         if (footer()) remove(footer());
         footer(newValue);
-        View::State::insertChild(footer());
+        View::State::insertChild(footer(), View::State::children_.count());
         footer().pos([this]{ return carrier().pos() + Point{0, carrier().height() - footer().height()}; });
         footer().visible([this]{ return footer().pos()[1] < height(); });
     }

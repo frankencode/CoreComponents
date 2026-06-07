@@ -62,6 +62,9 @@ public:
 
     void deplete(); ///< Remove all children (list items)
 
+    View &itemAt(long index); ///< Get list item at \a index
+    const View &itemAt(long index) const; ///< Get list item at \a index
+
 protected:
     class Pane;
 

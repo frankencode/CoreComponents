@@ -222,11 +222,19 @@ public:
       */
     bool hasChildren() const { return me().childrenCount() > 0; }
 
+    /** Get the child at \a index
+      */
+    const View &childAt(long index) const { return me().children_.at(index); }
+
+    /** Get the child at \a index
+      */
+    View &childAt(long index) { return me().children_.at(index); }
+
     /** \copydoc addAbove()
       */
     auto add(this auto &&self, const View &child) -> decltype(auto)
     {
-        self.View::me().insertChild(child);
+        self.View::me().insertChild(child, self.View::count());
         return self;
     }
 
@@ -234,8 +242,7 @@ public:
       */
     auto addAbove(this auto &&self, const View &child) -> decltype(auto)
     {
-        self.View::me().insertChild(child);
-        return self;
+        return self.View::me().add(child);
     }
 
     /** Add \a child place visually below all existing children
@@ -781,8 +788,8 @@ protected:
         virtual void childDone(InOut<View> child); ///< Called after a child had been removed
         virtual void settled(); ///< Called on the child after it has been added (ideal place for setting up easing behavior / transitions)
 
-        void add(const View &child) { insertChild(child); } ///< \copydoc View::add()
-        void addAbove(const View &child) { insertChild(child); } ///< \copydoc View::addAbove()
+        void add(const View &child) { insertChild(child, children_.count()); } ///< \copydoc View::add()
+        void addAbove(const View &child) { add(child); } ///< \copydoc View::addAbove()
         void addBelow(const View &child); ///< \copydoc View::addBelow()
         void insertAt(Locator target, View child); ///< Insert new \a child at \a target
         void insertAt(long index, const View &child);  ///< Insert new \a child at \a index
@@ -790,7 +797,7 @@ protected:
 
         void box(const View &child); ///< add single child and bind this view's size to it
 
-        virtual void insertChild(View child); ///< Handles the insertion of new children
+        virtual void insertChild(View child, long index); ///< Handles the insertion of new children
         virtual void removeChild(View child); ///< Handles the removal of children
 
         void moveToTop() { if (hasParent()) parent().me().moveToTop(self()); } ///< \copydoc View::moveToTop();

@@ -209,11 +209,11 @@ public:
         Extent y_;
     };
 
-    /** Get a iterateable source for reading all layout stops in layout range [\a pos0, \a pos1)
+    /** Get a iterable source for reading all layout stops in layout range [\a pos0, \a pos1)
       */
     Range operator()(Extent pos0, Extent pos1) const { return Range{*this, pos0, pos1}; }
 
-    /** Get a iterateable source for reading all layout stops
+    /** Get a iterable source for reading all layout stops
       */
     Range operator()() const { return Range{*this}; }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Frank Mertens.
+ * Copyright (C) 2022-2026 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the Apache License version 2.0
  * (see CoreComponents/LICENSE-Apache-2.0).
@@ -7,7 +7,7 @@
  */
 
 #include <cc/TextView>
-#include <cc/Text>
+#include <cc/TextState>
 #include <cc/LineSource>
 
 namespace cc {
@@ -50,14 +50,17 @@ struct TextView::State final: public ListView::State
     Property<Size> margin;
 };
 
-TextView::TextView():
+TextView::TextView(Out<TextView> self):
     ListView{onDemand<State>}
-{}
+{
+    View::associate<TextView>(self);
+}
 
-TextView::TextView(double width, double height):
+TextView::TextView(const Size &size, Out<TextView> self):
     ListView{new State}
 {
-    size({width, height});
+    View::size(size);
+    View::associate<TextView>(self);
 }
 
 TextView::TextView(const String &text):
@@ -118,6 +121,11 @@ TextView &TextView::margin(Definition<Size> &&f)
 {
     me().margin(move(f));
     return *this;
+}
+
+Text TextView::lineAt(long index) const
+{
+    return itemAt(index).as<Text>();
 }
 
 TextView::State &TextView::me()

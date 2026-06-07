@@ -75,11 +75,18 @@ class ListView::Pane final: public View
             });
         }
 
-        void insertChild(View child) override
+        void insertChild(View child, long index) override
         {
-            child.pos(Point{0, leadSpace() + layout_.extent()});
-            View::State::insertChild(child);
-            layout_.pushBack(child, child.height());
+            if (index <= 0) {
+                layout_.pushFront(child, child.height());
+            }
+            else if (children_.count() <= index) {
+                layout_.pushBack(child, child.height());
+            }
+            else {
+                layout_.insertAt(index, child, child.height());
+            }
+            View::State::insertChild(child, index);
             layoutExtent(layout_.extent());
         }
 
@@ -136,7 +143,7 @@ void ListView::State::setHeader(const View &newValue)
 {
     if (header()) remove(header());
     header(newValue);
-    View::State::insertChild(header());
+    View::State::insertChild(header(), 0);
     header().pos([this]{ return carrier().pos(); });
     header().visible([this]{ return header().height() >= -carrier().pos()[1]; });
 }
@@ -145,7 +152,7 @@ void ListView::State::setFooter(const View &newValue)
 {
     if (footer()) remove(footer());
     footer(newValue);
-    View::State::insertChild(footer());
+    View::State::insertChild(footer(), View::State::children_.count());
     footer().pos([this]{ return carrier().pos() + Point{0, carrier().height() - footer().height()}; });
     footer().visible([this]{ return footer().pos()[1] < height(); });
 }
@@ -215,6 +222,16 @@ ListView &ListView::tailSpace(double newValue)
 void ListView::deplete()
 {
     me().deplete();
+}
+
+View &ListView::itemAt(long index)
+{
+    return carrier().childAt(index);
+}
+
+const View &ListView::itemAt(long index) const
+{
+    return carrier().childAt(index);
 }
 
 ListView::State &ListView::me()

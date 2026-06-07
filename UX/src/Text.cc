@@ -157,6 +157,12 @@ FontMetrics Text::fontMetrics() const
     return me().metrics();
 }
 
+Text &Text::dye(const Array<Color> &ink, const Array<Color> &paper, int offset)
+{
+    me().dye(ink, paper, offset);
+    return *this;
+}
+
 Text::State &Text::me()
 {
     return get<State>();

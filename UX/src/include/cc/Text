@@ -21,8 +21,6 @@ namespace cc {
   * A Text shows descriptive texts, which might be wrapped into multiple lines.
   * When maxWidth() is set the text will be automatically wrapped if necessary.
   * The text() property supports basic HTML tags (&lt;b&gt;, &lt;i&gt;, &lt;u&gt; and &lt;strike&gt;).
-  *
-  * \todo harmonize constructors
   */
 class Text: public View
 {
@@ -73,7 +71,16 @@ public:
     Text &baselineStart(Definition<Point> &&a); ///< %Anchor the text with its first baseline start to \a a
     FontMetrics fontMetrics() const; ///< %Current font metrics
 
+    /** Manually colorize the text
+      * \param ink Foreground color per byte offset
+      * \param paper Background color per byte offset
+      * \param offset Byte offset for accessing the \a ink and \a paper vectors
+      */
+    Text &dye(const Array<Color> &ink, const Array<Color> &paper = {}, int offset = 0);
+
 protected:
+    friend class Object;
+
     struct State;
 
     Text(const String &text, Font font, bool html);

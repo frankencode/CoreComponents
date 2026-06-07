@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Frank Mertens.
+ * Copyright (C) 2022-2026 Frank Mertens.
  *
  * Distribution and use is allowed under the terms of the Apache License version 2.0
  * (see CoreComponents/LICENSE-Apache-2.0).
@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cc/ListView>
+#include <cc/Text>
 #include <cc/FlickableIndicator>
 
 namespace cc {
@@ -25,15 +26,21 @@ namespace cc {
 class TextView final: public ListView
 {
 public:
-    /** Create a primordial text view
+    /** Create a text view
       */
-    TextView();
+    explicit TextView(Out<TextView> self = None{});
 
-    /** Create a new text view of size (\a width, \a height)
+    /** Create a text view of given size (\a width, \a height)
       */
-    TextView(double width, double height);
+    explicit TextView(const Size &size, Out<TextView> self = None{});
 
-    /** Create a new text view
+    /** Create a text view of given size (\a width, \a height)
+      */
+    TextView(double width, double height, Out<TextView> self = None{}):
+        TextView{Size{width, height}, self}
+    {}
+
+    /** Create a text view
       * \param text Initial text to display
       */
     explicit TextView(const String &text);
@@ -53,6 +60,8 @@ public:
     Size margin() const; ///< Get inside margin
     TextView &margin(Size newValue); ///< %Set inside margin
     TextView &margin(Definition<Size> &&f); ///< Define inside margin
+
+    Text lineAt(long index) const; ///< Get text line at \a index
 
 private:
     struct State;

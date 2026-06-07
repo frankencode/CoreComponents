@@ -44,7 +44,7 @@ Flickable::State::State(const View &carrier, bool autoCenter):
         keepFocusControlInView();
     });
 
-    if (!carrier_.hasParent()) View::State::insertChild(carrier_);
+    if (!carrier_.hasParent()) View::State::add(carrier_);
 
     onPointerClicked([this](const PointerEvent &event)
     {
