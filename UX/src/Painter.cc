@@ -132,7 +132,11 @@ Painter &Painter::arcAround(Point b, double alpha)
 
 Painter &Painter::arc(Point m, double r, double alpha0, double alpha1)
 {
-    cairo_arc(cr_, m[0], m[1], r, alpha0, alpha1);
+    if (alpha0 < alpha1)
+        cairo_arc(cr_, m[0], m[1], r, alpha0, alpha1);
+    else
+        cairo_arc_negative(cr_, m[0], m[1], r, alpha0, alpha1);
+
     return *this;
 }
 

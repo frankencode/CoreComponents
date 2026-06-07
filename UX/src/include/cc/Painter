@@ -26,8 +26,6 @@ class Path;
   * \ingroup ui
   * \brief Drawing 2D vector graphics
   * \exception PainterError
-  * \todo make showGlyphRun() and showTextRun() use the currentPoint() as baseline start
-  * \todo remove arcNegative() (automatically select the proper method)
   */
 class Painter
 {
@@ -87,10 +85,6 @@ public:
     /** Add a circular arc of radius \a r centered at \a m starting at angle \a alpha0 and ending at angle \a alpha1 (in radians)
       */
     Painter &arc(Point m, double r, double alpha0 = 0, double alpha1 = 2 * M_PI);
-
-    /** Add a circular arc with \a alpha1 < \a alpha0
-      */
-    Painter &arcNegative(Point m, double r, double alpha0, double alpha1);
 
     /** Add a closed sub-path in form of a rectangle with top-left at \a pos and given dimensions \a size
       */
@@ -208,6 +202,8 @@ public:
 
 private:
     Painter(const Painter &) = delete;
+
+    Painter &arcNegative(Point m, double r, double alpha0, double alpha1);
 
     template<typename T>
     Painter &showGlyphRun(Point pos, const GlyphRun &run, T ink, T paper, int offset);
