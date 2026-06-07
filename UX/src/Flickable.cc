@@ -381,7 +381,7 @@ Flickable::Flickable(Out<Flickable> self):
     View::associate<Flickable>(self);
 }
 
-Flickable::Flickable(const Size &size, const View &carrier, Out<Flickable> self):
+Flickable::Flickable(Size size, const View &carrier, Out<Flickable> self):
     Control{new State{carrier}}
 {
     View::size(size);

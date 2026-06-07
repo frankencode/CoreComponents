@@ -93,7 +93,7 @@ StackView::StackView(Out<StackView> self):
     View::associate<StackView>(self);
 }
 
-StackView::StackView(const Size &size, Out<StackView> self):
+StackView::StackView(Size size, Out<StackView> self):
     View{new State{size}}
 {
     View::associate<StackView>(self);

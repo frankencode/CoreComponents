@@ -68,7 +68,7 @@ ScrollView::ScrollView(Out<ScrollView> self):
     View::associate<ScrollView>(self);
 }
 
-ScrollView::ScrollView(const Size &size, Out<ScrollView> self):
+ScrollView::ScrollView(Size size, Out<ScrollView> self):
     View{new State}
 {
     View::size(size);

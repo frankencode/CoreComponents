@@ -84,7 +84,7 @@ LogView::LogView(Out<LogView> self):
     View::associate<LogView>(self);
 }
 
-LogView::LogView(const Size &size, Out<LogView> self):
+LogView::LogView(Size size, Out<LogView> self):
     ListView{new State}
 {
     View::size(size);

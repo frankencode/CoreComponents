@@ -29,7 +29,7 @@ public:
 
     /** Create a pane of \a size
       */
-    explicit Pane(const Size &size, Out<Pane> self = None{}):
+    explicit Pane(Size size, Out<Pane> self = None{}):
         View{new State}
     {
         View::size(size);

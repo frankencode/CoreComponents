@@ -28,7 +28,7 @@ public:
 
     /** Create a row of \a size
       */
-    explicit Row(const Size &size, Out<Row> self = None{}):
+    explicit Row(Size size, Out<Row> self = None{}):
         View{RowLayout{}}
     {
         View::associate<Row>(self);

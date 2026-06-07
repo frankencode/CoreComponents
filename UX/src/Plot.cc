@@ -80,7 +80,7 @@ Plot::Plot(Out<Plot> self):
     View::associate<Plot>(self);
 }
 
-Plot::Plot(const Size &size, Out<Plot> self):
+Plot::Plot(Size size, Out<Plot> self):
     View{new State}
 {
     View::size(size);

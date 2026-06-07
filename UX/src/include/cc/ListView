@@ -28,7 +28,7 @@ public:
 
     /** Create a new list view of \a size
       */
-    explicit ListView(const Size &size, Out<ListView> self = None{});
+    explicit ListView(Size size, Out<ListView> self = None{});
 
     /** Create a new list view of size (\a width, \a height)
       */

@@ -28,7 +28,7 @@ public:
 
     /** Create a list menu of given \a size
       */
-    explicit ListMenu(const Size &size, Out<ListMenu> self = None{});
+    explicit ListMenu(Size size, Out<ListMenu> self = None{});
 
     /** Create a list menu of given size (\a width, \a height)
       */

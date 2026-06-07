@@ -34,7 +34,7 @@ public:
 
     /** Create a new column of \a size
       */
-    explicit Column(const Size &size, Out<Column> self = None{}):
+    explicit Column(Size size, Out<Column> self = None{}):
         View{ColumnLayout{}}
     {
         View::associate<Column>(self);

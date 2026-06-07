@@ -25,7 +25,7 @@ public:
 
     /** Create a box of \a size
       */
-    explicit Box(const Size &size, Out<Box> self = None{});
+    explicit Box(Size size, Out<Box> self = None{});
 
     /** Create a box of size (\a width, \a height)
       */

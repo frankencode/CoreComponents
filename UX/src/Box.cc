@@ -88,7 +88,7 @@ Box::Box(Out<Box> self):
     View::associate<Box>(self);
 }
 
-Box::Box(const Size &size, Out<Box> self):
+Box::Box(Size size, Out<Box> self):
     View{new State}
 {
     View::size(size);

@@ -27,7 +27,7 @@ public:
 
     /** Create a flickable of given \a size and optional custom \a carrier
       */
-    explicit Flickable(const Size &size, const View &carrier = Pane{}, Out<Flickable> self = None{});
+    explicit Flickable(Size size, const View &carrier = Pane{}, Out<Flickable> self = None{});
 
     /** Create a flickable of given size (\a width, \a height) and optional custom \a carrier
       */

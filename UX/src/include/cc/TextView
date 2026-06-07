@@ -32,7 +32,7 @@ public:
 
     /** Create a text view of given size (\a width, \a height)
       */
-    explicit TextView(const Size &size, Out<TextView> self = None{});
+    explicit TextView(Size size, Out<TextView> self = None{});
 
     /** Create a text view of given size (\a width, \a height)
       */

@@ -26,7 +26,7 @@ public:
 
     /** Create a plot of size
       */
-    explicit Plot(const Size &size, Out<Plot> self = None{});
+    explicit Plot(Size size, Out<Plot> self = None{});
 
     /** Create a plot of size (\a width, \a height)
       */

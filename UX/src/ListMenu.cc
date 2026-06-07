@@ -144,7 +144,7 @@ ListMenu::ListMenu(Out<ListMenu> self):
     View::associate<ListMenu>(self);
 }
 
-ListMenu::ListMenu(const Size &size, Out<ListMenu> self):
+ListMenu::ListMenu(Size size, Out<ListMenu> self):
     Flickable{new State}
 {
     View::size(size);

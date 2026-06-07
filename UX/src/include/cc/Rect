@@ -25,13 +25,13 @@ public:
 
     /** Create a rectangle of given \a size
       */
-    Rect(const Size &size):
+    Rect(Size size):
         size_{size}
     {}
 
     /** Create a rectangle of given \a size located at \a pos
       */
-    Rect(const Point &pos, const Size &size):
+    Rect(const Point &pos, Size size):
         pos_{pos},
         size_{size}
     {}

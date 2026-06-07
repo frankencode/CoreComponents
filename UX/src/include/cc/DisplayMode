@@ -25,7 +25,7 @@ public:
 
     /** \internal
       */
-    DisplayMode(const Size &resolution, double refreshRate):
+    DisplayMode(Size resolution, double refreshRate):
         resolution_{resolution},
         refreshRate_{refreshRate}
     {}

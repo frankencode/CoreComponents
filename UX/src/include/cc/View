@@ -59,7 +59,7 @@ public:
 
     /** Create a view of initial \a size
       */
-    explicit View(const Size &size, Out<View> self = None{})
+    explicit View(Size size, Out<View> self = None{})
     {
         me().size(size);
         if (self.requested()) self = weak<View>();

@@ -27,7 +27,7 @@ public:
 
     /** Create a scroll view of size (\a width, \a height)
       */
-    explicit ScrollView(const Size &size, Out<ScrollView> self = None{});
+    explicit ScrollView(Size size, Out<ScrollView> self = None{});
 
     /** Create a scroll view of size (\a width, \a height)
       */

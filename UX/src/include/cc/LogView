@@ -28,7 +28,7 @@ public:
 
     /** Create a log view of \a size
       */
-    explicit LogView(const Size &size, Out<LogView> self = None{});
+    explicit LogView(Size size, Out<LogView> self = None{});
 
     /** Create a log view of size (\a width, \a height)
       */

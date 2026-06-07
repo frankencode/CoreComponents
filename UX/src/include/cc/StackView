@@ -25,7 +25,7 @@ public:
 
     /** Create a view stack of given \a size
       */
-    explicit StackView(const Size &size, Out<StackView> self = None{});
+    explicit StackView(Size size, Out<StackView> self = None{});
 
     /** Create a view stack of given size (\a width, \a height)
       */

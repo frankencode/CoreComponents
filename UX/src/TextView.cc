@@ -56,7 +56,7 @@ TextView::TextView(Out<TextView> self):
     View::associate<TextView>(self);
 }
 
-TextView::TextView(const Size &size, Out<TextView> self):
+TextView::TextView(Size size, Out<TextView> self):
     ListView{new State}
 {
     View::size(size);

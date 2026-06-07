@@ -28,7 +28,7 @@ public:
 
     /** Create a grid of \a size
       */
-    explicit Grid(const Size &size, int columns = 2, Out<Grid> self = None{}):
+    explicit Grid(Size size, int columns = 2, Out<Grid> self = None{}):
         View{GridLayout{}.columns(columns)}
     {
         View::size(size);
