@@ -62,10 +62,16 @@ public:
     PlainText &maxWidth(double newValue); ///< %Set maximum width
     PlainText &maxWidth(Definition<double> &&f); ///< Define maximum width
 
+    // #if 0
     using GetColor = Function<Color(int)>; ///< Get color for a given byte offset
 
     PlainText &getInk(GetColor &&f); ///< %Set function to colorize the foreground
     PlainText &getPaper(GetColor &&f); ///< %Set function to colorize the background
+    // #endif
+
+    /** Set the foreground and background text colors (one color per byte offset)
+      */
+    // PlainText &dye(const Array<Color> &ink, const Array<Color> &paper = {});
 
 private:
     struct State;

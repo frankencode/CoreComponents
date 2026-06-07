@@ -48,7 +48,7 @@ struct PlainText::State final: public View::State
         });
 
         paint([this]{
-            if (getInk_ && getPaper_) {
+            if (getInk_ || getPaper_) {
                 Painter{this}
                 .setPen(color())
                 .showGlyphRun(textPos().round(), wrappedRun(), getInk_, getPaper_);

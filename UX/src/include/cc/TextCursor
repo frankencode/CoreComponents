@@ -19,9 +19,13 @@ namespace cc {
 class TextCursor: public Object
 {
 public:
-    /** Create a null text cursor
+    /** Create an undefined text cursor
       */
     TextCursor() = default;
+
+    /** Tell if this is a defined cursor
+      */
+    explicit operator bool() const { return !isNull(); }
 
     Point posA() const { return me().posA_; } ///< Above baseline position
     Point posB() const { return me().posB_; } ///< Below baseline position
@@ -39,8 +43,6 @@ public:
     void assign(const TextCursor &other) { if (!isNull()) me().assign(other); } ///< Assign a deep-copy of \a other
 
     bool operator==(const TextCursor &b) const { return offset() == b.offset(); } ///< Equal to operator
-
-    bool operator!=(const TextCursor &b) const { return offset() != b.offset(); } ///< Not equal to operator
 
 protected:
     friend class Object;

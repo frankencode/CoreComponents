@@ -11,7 +11,7 @@ int main()
     const double fontSize = 20;
     const double margins = fontSize;
 
-    GlyphRun run = {
+    GlyphRun run {
         "Es war einmal eine Königstochter, die ging hinaus in den Wald und setzte "
         "sich an einen kühlen Brunnen. Sie hatte eine goldene Kugel, die war ihr "
         "liebstes Spielwerk, die warf sie in die Höhe und fing sie wieder in der "

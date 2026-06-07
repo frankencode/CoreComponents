@@ -28,7 +28,7 @@ public:
       * \param font %Font to use
       * \param origin Starting point
       */
-    GlyphRun(const String &text, const Font &font = Font{}, const Point &origin = Point{});
+    explicit GlyphRun(const String &text, const Font &font = Font{}, const Point &origin = Point{});
 
     /** Check if this glyph run is empty (i.e. does not contain any glyphs)
       */
