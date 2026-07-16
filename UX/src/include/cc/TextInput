@@ -16,6 +16,7 @@ namespace cc {
 /** \class TextInput cc/TextInput
   * \ingroup ui
   * \brief %Single-line text input control
+  * \todo harmonize constructors
   */
 class TextInput: public InputControl
 {

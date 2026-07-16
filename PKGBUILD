@@ -24,11 +24,11 @@ pkgname=(
 pkgver=2.2.3
 pkgrel=1
 pkgdesc="Toolkit for C++ application development"
-url="https://www.corecomponents.io"
+url="https://www.corecomponents.net"
 arch=('x86_64')
 license=('GPL3')
 source=(
-    "$pkgbase-$pkgver.tar.gz::https://www.corecomponents.io/download/CoreComponents-$pkgver.tar.gz"
+    "$pkgbase-$pkgver.tar.gz::https://www.corecomponents.net/download/CoreComponents-$pkgver.tar.gz"
 )
 md5sums=(
     '60c8e2d342fdb6ae199016357489e15a'
