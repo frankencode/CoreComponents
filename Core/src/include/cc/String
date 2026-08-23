@@ -363,7 +363,7 @@ public:
       */
     String copy(long i0, long i1) const
     {
-        assert(0 <= i0 && i0 <= i1 && i1 <= count());
+        if (!(0 <= i0 && i0 <= i1 && i1 <= count())) return {};
         long m = i1 - i0;
         if (m <= 0) return String{};
         return String{chars() + i0, m};
