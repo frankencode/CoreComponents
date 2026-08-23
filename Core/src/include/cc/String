@@ -373,7 +373,7 @@ public:
       */
     String copy(Range range) const
     {
-        assert(0 <= range[0] && range[1] <= count());
+        if (!(0 <= range[0] && range[1] <= count())) return {};
         return copy(range[0], range[1]);
     }
 
@@ -381,7 +381,7 @@ public:
       */
     void resize(long n)
     {
-        assert(n >= 0);
+        if (n < 0) n = 0;
         if (count() != n) {
             Array old = *this;
             (*this) = String::allocate(n, '\0');
@@ -393,7 +393,7 @@ public:
       */
     void truncate(long n)
     {
-        assert(n >= 0);
+        if (n < 0) n = 0;
         if (n < me().count) {
             me().count = n;
             if (!me().parent)
@@ -405,7 +405,7 @@ public:
       */
     String select(long i0, long i1)
     {
-        assert(0 <= i0 && i0 <= i1 && i1 <= count());
+        if (!(0 <= i0 && i0 <= i1 && i1 <= count())) return String{me, 0, 0};
         return String{me, i0, i1};
     }
 
@@ -413,7 +413,7 @@ public:
       */
     String select(Range range)
     {
-        assert(0 <= range[0] && range[1] <= count());
+        if (!(0 <= range[0] && range[1] <= count())) return String{me, 0, 0};
         return select(range[0], range[1]);
     }
 
@@ -421,7 +421,7 @@ public:
       */
     String selectHead(long n)
     {
-        assert(n >= 0);
+        if (n < 0) n = 0;
         if (count() < n) n = count();
         return select(0, n);
     }
@@ -430,7 +430,7 @@ public:
       */
     String selectTail(long n)
     {
-        assert(n >= 0);
+        if (n < 0) n = 0;
         if (count() < n) n = count();
         return select(count() - n, count());
     }
@@ -440,7 +440,7 @@ public:
       */
     String &selectAs(long i0, long i1, Out<String> target)
     {
-        assert(0 <= i0 && i0 <= i1 && i1 <= count());
+        if (!(0 <= i0 && i0 <= i1 && i1 <= count())) return selectAs(0, 0, &target);
 
         State &targetState = target->me();
         targetState.~State();
