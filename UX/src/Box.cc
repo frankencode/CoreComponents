@@ -51,7 +51,7 @@ Box::State::State()
             .moveTo({r, h})
             .arc({r, r}, r, rad(90), rad(270))
             .lineTo({w - r, 0})
-            .arc({w - r, r}, r, rad(270), rad(90))
+            .arc({w - r, r}, r, rad(270), rad(450))
             .lineTo({r, h});
         }
         else {
