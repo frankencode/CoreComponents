@@ -177,8 +177,9 @@ FtTextRun FtTextRun::State::unfold(FtGlyphRun &metaBlock, const List<FtGlyphRun>
 
 TextCursor FtTextRun::State::getTextCursor(int offset) const
 {
-    if (byteCount_ < offset || offset < 0 || glyphRuns_.count() == 0)
+    if (byteCount_ < offset || offset < 0 || glyphRuns_.count() == 0) {
         return TextCursor{};
+    }
 
     FtTextCursor cursor{self()};
     FtTextCursor::State &cursorState = cursor.me();

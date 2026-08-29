@@ -30,14 +30,18 @@ TextInput::State::State(const TextEditor &editor):
 
     unwrappedTextRun([this]{
         TextRun run;
+        bool oneAppended = false;
         if (imeChunks().count() > 0) {
             for (const String &chunk: imeChunks()) {
-                if (chunk.count() > 0)
+                if (chunk.count() > 0) {
                     run.append(chunk, font());
+                    oneAppended = true;
+                }
             }
         }
-        else
+        if (!oneAppended) {
             run.append(text(), font());
+        }
         return run;
     });
 
@@ -54,7 +58,7 @@ TextInput::State::State(const TextEditor &editor):
         if (textCursor()) {
             int offset = textCursor().offset();
             if (offset > textRun().byteCount()) offset = textRun().byteCount();
-            textCursor(textRun().getTextCursor(offset));
+            textCursor = textRun().getTextCursor(offset);
         }
     });
 
